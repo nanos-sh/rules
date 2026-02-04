@@ -1,0 +1,45 @@
+---
+title: workstation_to_dc_lateral_movement
+description: Detects lateral movement patterns where a user authenticates to multiple systems in sequence, progressing from workstations to servers to domain controllers. This pattern is characteristic of attackers moving through a network after initial compromise.
+author: nanos.sh
+severity: high
+mode: staging
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 2h
+mitre_tactics:
+  - TA0008
+mitre_techniques:
+  - T1021
+  - T1021.001
+  - T1021.002
+  - T1021.006
+tags:
+  - lateral_movement
+  - sequence
+  - active_directory
+ai_triage_hints:
+  ignore_when:
+    - "User is IT admin performing routine maintenance"
+    - "Activity matches known change management window"
+    - "User is running automated deployment scripts"
+  suspicious_when:
+    - "User doesn't normally access servers or domain controllers"
+    - "Movement occurs outside business hours"
+    - "Authentication uses pass-the-hash or Kerberos anomalies"
+    - "Time between hops is very short (automated tool)"
+  context: "Lateral movement often follows a compromised workstation. Check the initial workstation for signs of compromise. Review what files were accessed on each hop. Domain controller access is especially critical to investigate."
+---
+source_type=windows_security OR source_type=auth_logs
+| where action="login" AND status="success"
+| sequence by user maxspan=1h
+    fields(src_ip, dest_host, auth_type)
+    [dest_host=/^(ws|wks|workstation|desktop|laptop)/i]
+    [dest_host=/^(srv|server|app|web|db)/i]
+    [dest_host=/^(dc|domain|ad|pdc|bdc)/i]
+| risk score=80 entity=user factor="Workstation to DC progression"
+| where sequence_duration < 300
+| risk score=90 factor="Rapid lateral movement"
+| where auth_type = "ntlm"
+| risk score=95 factor="NTLM authentication"
+| table timestamp, user, src_ip, dest_host, auth_type, sequence_duration, risk_score, risk_factors

@@ -1,0 +1,40 @@
+---
+title: newly_seen_rare_process_execution
+description: Detects execution of processes with file hashes that are both rare (seen on few hosts) AND newly appeared in the environment (first seen recently). This combination is highly indicative of new malware or attacker tools being deployed.
+author: nanos.sh
+severity: high
+mode: staging
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 1h
+mitre_tactics:
+  - TA0002
+mitre_techniques:
+  - T1204.002
+tags:
+  - prevalence
+  - rare_hash
+  - new_artifact
+  - execution
+ai_triage_hints:
+  ignore_when:
+    - "Hash belongs to a recently deployed software update"
+    - "Process is from a new but legitimate application install"
+    - "File is signed by a trusted vendor"
+  suspicious_when:
+    - "Hash has no vendor signature"
+    - "Process spawns child processes or makes network connections"
+    - "File located in temp or user-writable directory"
+    - "Execution shortly after file creation"
+  context: "Newly appeared rare hashes are prime indicators of malware. The combination of low prevalence AND recent first_seen strongly suggests this is not legitimate software. Check VirusTotal for the hash. Review what created this file and what the process did after execution."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_hash != ""
+| prevalence hash_prevalence < 5 AND hash_first_seen > now() - INTERVAL 24 HOUR enrich=true window=30d
+| risk score=80 entity=src_host factor="Newly seen rare process"
+| where hash_prevalence < 3
+| risk score=90 factor="Very rare hash"
+| where process_path CONTAINS "Temp" OR process_path CONTAINS "AppData\\Local"
+| risk score=95 factor="Suspicious execution path"
+| table timestamp, src_host, user, process_name, process_path, process_hash, hash_prevalence, hash_first_seen, parent_process, command_line, risk_score, risk_factors

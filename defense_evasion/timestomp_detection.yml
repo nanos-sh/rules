@@ -1,0 +1,39 @@
+---
+title: file_timestamp_manipulation
+description: Detects timestamp manipulation (timestomping) where a file's creation or modification time is changed to evade forensic analysis.
+author: nanos.sh
+severity: medium
+mode: staging
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 1h
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1070.006
+tags:
+  - timestomp
+  - forensics
+  - evasion
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "File is from a software installer that preserves original timestamps"
+    - "Activity is from backup/restore operations"
+    - "File is extracted from an archive (zip, tar)"
+  suspicious_when:
+    - "Timestamp is set to match system files (blending in)"
+    - "File has low prevalence and recent actual creation"
+    - "Associated with other suspicious process activity"
+  context: "Timestomping hides when malware was actually dropped. The $STANDARD_INFORMATION timestamps are modified but $FILE_NAME timestamps in MFT remain accurate. Investigate what process created this file and when."
+---
+source_type=windows_sysmon
+| where action="file_time_change"
+| prevalence enrich=true window=30d
+| where prevalence_file_hash < 20
+| risk score=60 entity=src_host factor="Timestamp manipulation"
+| where prevalence_file_hash < 10
+| risk score=80 factor="Rare file hash"
+| where file_path CONTAINS "System32"
+| risk score=90 factor="System directory target"
+| table timestamp, src_host, file_path, file_hash, process_name, prevalence_file_hash, risk_score, risk_factors

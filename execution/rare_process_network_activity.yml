@@ -1,0 +1,43 @@
+---
+title: rare_process_network_connection
+description: Detects processes with low prevalence (rarely seen across the environment) making network connections. Rare executables with network activity are often indicators of malware, backdoors, or unauthorized tools.
+author: nanos.sh
+severity: high
+mode: staging
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 10m
+mitre_tactics:
+  - TA0002
+  - TA0011
+mitre_techniques:
+  - T1059
+  - T1071
+tags:
+  - prevalence
+  - network
+  - malware
+  - c2
+ai_triage_hints:
+  ignore_when:
+    - "Process is a newly deployed internal tool (check with IT)"
+    - "Executable is signed by a trusted vendor"
+    - "Network destination is a known CDN or software update server"
+  suspicious_when:
+    - "Process hash has zero prevalence (never seen before)"
+    - "Connection is to a non-standard port"
+    - "Destination IP is in a hosting provider range"
+    - "Process was recently dropped to disk (check file creation time)"
+  context: "Low prevalence + network activity is a strong signal for malware. Check VirusTotal for the file hash. Investigate how the file arrived on the host."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="network_connect" AND dest_port > 0
+| prevalence enrich=true window=30d
+| where prevalence_process_hash < 10
+| where dest_ip != /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/
+| risk score=50 entity=src_host factor="Rare process with network"
+| where prevalence_process_hash < 5
+| risk score=75 factor="Very rare hash"
+| where dest_port NOT IN (80, 443, 53)
+| risk score=85 factor="Non-standard port"
+| table timestamp, src_host, process_name, process_path, process_hash, dest_ip, dest_port, prevalence_process_hash, risk_score, risk_factors

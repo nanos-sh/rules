@@ -1,0 +1,45 @@
+---
+title: network_reconnaissance_command_sequence
+description: Detects network reconnaissance patterns where multiple discovery commands are executed in sequence. This pattern indicates an attacker or tool enumerating the network after gaining initial access.
+author: nanos.sh
+severity: medium
+mode: staging
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 30m
+mitre_tactics:
+  - TA0007
+mitre_techniques:
+  - T1016
+  - T1018
+  - T1049
+  - T1087
+tags:
+  - discovery
+  - reconnaissance
+  - sequence
+  - post_exploitation
+ai_triage_hints:
+  ignore_when:
+    - "User is IT/network administrator troubleshooting"
+    - "Commands are part of a monitoring or inventory script"
+    - "Activity is from a known asset discovery tool"
+  suspicious_when:
+    - "User is not in IT or admin role"
+    - "Commands executed in rapid succession (scripted)"
+    - "Occurs shortly after a login from unusual location"
+    - "Host is a workstation, not admin jump box"
+  context: "Network reconnaissance is typically an early post-compromise activity. Check how the user session was established. Look for other suspicious activity on this host before and after the recon commands."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name IN ("ipconfig.exe", "net.exe", "nltest.exe", "nslookup.exe", "ping.exe", "systeminfo.exe", "whoami.exe", "hostname.exe", "netstat.exe", "arp.exe", "route.exe", "tracert.exe", "nbtstat.exe", "quser.exe", "query.exe")
+| sequence by user, src_host maxspan=10m
+    fields(process_name, command_line)
+    [process_name IN ("whoami.exe", "hostname.exe", "systeminfo.exe")]
+    [process_name IN ("ipconfig.exe", "netstat.exe", "arp.exe", "route.exe")]
+    [process_name IN ("net.exe", "nltest.exe", "nslookup.exe") command_line=/(view|user|group|domain|query)/i]
+| risk score=55 entity=src_host factor="Reconnaissance sequence"
+| where sequence_duration < 60
+| risk score=75 factor="Rapid enumeration"
+| table timestamp, user, src_host, process_name, command_line, sequence_duration, risk_score, risk_factors
