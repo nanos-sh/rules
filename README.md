@@ -1,17 +1,17 @@
-# NanoSIEM Detection Rules
+# nano Detection Rules
 
-Official detection rule repository for [NanoSIEM](https://nanos.sh). These rules are written in native nPL (nano Pipe Language) format and can be synced directly into your NanoSIEM deployment.
+Official detection rule repository for [nano](https://nanos.sh). These rules are written in native nPL (nano Pipe Language) format and can be synced directly into your nano deployment.
 
 ## Usage
 
-Add this repository in NanoSIEM:
+Add this repository in nano:
 
 1. Navigate to **Settings → Rule Repositories**
 2. Click **Add Repository**
 3. Enter:
    - **URL**: `https://github.com/nanos-sh/rules`
    - **Branch**: `main`
-   - **Format**: NanoSIEM (nPL)
+   - **Format**: nano (nPL)
 4. Click **Sync** to fetch rules
 5. Browse and import rules as needed
 
@@ -54,7 +54,7 @@ source_type="logs"
 
 ## Advanced Features
 
-These rules showcase NanoSIEM's advanced detection capabilities:
+These rules showcase nano's advanced detection capabilities:
 
 ### Sequence Detection
 Detect ordered event chains (e.g., failed logins → success):
