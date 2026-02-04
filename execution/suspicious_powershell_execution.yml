@@ -7,6 +7,7 @@ mode: staging
 detection_mode: scheduled
 schedule: "*/2 * * * *"
 lookback: 5m
+folder: Endpoint
 mitre_tactics:
   - TA0002
   - TA0005
