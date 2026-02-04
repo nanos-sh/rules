@@ -31,7 +31,7 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_hash != ""
-| prevalence hash_prevalence < 5 AND hash_first_seen > now() - INTERVAL 24 HOUR enrich=true window=30d
+| prevalence hash_prevalence < 5 hash_first_seen > now()-24h enrich=true window=30d
 | risk score=80 entity=src_host factor="Newly seen rare process"
 | where hash_prevalence < 3
 | risk score=90 factor="Very rare hash"

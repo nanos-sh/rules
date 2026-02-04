@@ -32,7 +32,7 @@ ai_triage_hints:
 ---
 source_type=proxy OR source_type=firewall OR source_type=dns
 | where dest_host != "" AND dest_host NOT CONTAINS "."
-| prevalence domain_prevalence < 10 AND domain_first_seen > now() - INTERVAL 24 HOUR enrich=true window=30d
+| prevalence domain_prevalence < 10 domain_first_seen > now()-24h enrich=true window=30d
 | risk score=70 entity=src_host factor="Connection to newly seen domain"
 | where domain_prevalence < 5
 | risk score=80 factor="Very rare domain"
