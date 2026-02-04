@@ -65,7 +65,8 @@ Detect ordered event chains (e.g., failed logins → success):
 ### Prevalence Filtering
 Alert only on rare/new artifacts:
 ```
-| prevalence hash_prevalence < 5 window=7d
+| prevalence enrich=true window=30d
+| where hash_prevalence < 5 AND hash_first_seen > now() - INTERVAL 24 HOUR
 ```
 
 ### Risk-Based Scoring
