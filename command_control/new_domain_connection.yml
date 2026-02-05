@@ -34,12 +34,12 @@ ai_triage_hints:
 source_type=proxy OR source_type=firewall OR source_type=dns
 | where dest_host != "" AND dest_host NOT LIKE "%.%"
 | prevalence enrich=true window=30d
-| where domain_prevalence < 10 AND domain_first_seen > now() - INTERVAL 24 HOUR
+| where host_count < 10 AND first_seen > now() - INTERVAL 24 HOUR
 | risk score=70 entity=src_host factor="Connection to newly seen domain"
-| where domain_prevalence < 5
+| where host_count < 5
 | risk score=80 factor="Very rare domain"
-| where domain_prevalence < 3
+| where host_count < 3
 | risk score=90 factor="Extremely rare domain"
 | where dest_host=/(^[a-z0-9]{12,}\.)|(\d{3,})/i
 | risk score=95 factor="Possible DGA domain"
-| table timestamp, src_host, src_ip, user, dest_host, dest_ip, dest_port, domain_prevalence, domain_first_seen, url, risk_score, risk_factors
+| table timestamp, src_host, src_ip, user, dest_host, dest_ip, dest_port, host_count, first_seen, is_rare, url, risk_score, risk_factors

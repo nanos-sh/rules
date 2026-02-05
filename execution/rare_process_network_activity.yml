@@ -34,11 +34,11 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="network_connect" AND dest_port > 0
 | prevalence enrich=true window=30d
-| where prevalence_process_hash < 10
+| where host_count < 10
 | where dest_ip != /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/
 | risk score=50 entity=src_host factor="Rare process with network"
-| where prevalence_process_hash < 5
+| where host_count < 5
 | risk score=75 factor="Very rare hash"
 | where dest_port NOT IN (80, 443, 53)
 | risk score=85 factor="Non-standard port"
-| table timestamp, src_host, process_name, process_path, process_hash, dest_ip, dest_port, prevalence_process_hash, risk_score, risk_factors
+| table timestamp, src_host, process_name, process_path, process_hash, dest_ip, dest_port, host_count, is_rare, risk_score, risk_factors

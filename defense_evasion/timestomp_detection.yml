@@ -31,10 +31,10 @@ ai_triage_hints:
 source_type=windows_sysmon
 | where action="file_time_change"
 | prevalence enrich=true window=30d
-| where prevalence_file_hash < 20
+| where host_count < 20
 | risk score=60 entity=src_host factor="Timestamp manipulation"
-| where prevalence_file_hash < 10
+| where host_count < 10
 | risk score=80 factor="Rare file hash"
 | where file_path CONTAINS "System32"
 | risk score=90 factor="System directory target"
-| table timestamp, src_host, file_path, file_hash, process_name, prevalence_file_hash, risk_score, risk_factors
+| table timestamp, src_host, file_path, file_hash, process_name, host_count, is_rare, risk_score, risk_factors
