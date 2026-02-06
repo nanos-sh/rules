@@ -32,7 +32,7 @@ ai_triage_hints:
   context: "Newly seen domains with low prevalence are classic C2 indicators. Attackers frequently rotate domains to evade detection. Check the domain registration date, hosting provider, and SSL certificate. Look for other hosts connecting to this domain or similar domains."
 ---
 source_type=proxy OR source_type=firewall OR source_type=dns
-| where dest_host != "" AND dest_host NOT LIKE "%.%"
+| where dest_host != "" AND dest_host LIKE "%.%"
 | prevalence enrich=true window=30d
 | where host_count < 10 AND first_seen > now() - INTERVAL 24 HOUR
 | risk score=70 entity=src_host factor="Connection to newly seen domain"
