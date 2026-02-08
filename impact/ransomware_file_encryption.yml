@@ -28,7 +28,7 @@ ai_triage_hints:
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where file_action="rename" OR file_action="modify"
 | where file_path=/(\.encrypted|\.locked|\.crypto|\.crypt|\.enc|\.pay|\.ransom)$/i
-| stats count by src_host, process_name
+| stats count, min(timestamp) as timestamp, values(user) as user by src_host, process_name
 | where count > 10
 | risk score=95 entity=src_host factor="Ransomware encryption pattern"
 | where count > 100

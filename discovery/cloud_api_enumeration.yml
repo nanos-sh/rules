@@ -29,7 +29,7 @@ ai_triage_hints:
 ---
 source_type=cloudtrail OR source_type=azure_activity
 | where action=/(List|Describe|Get)/i
-| stats count, dc(message) as unique_apis by user, src_ip
+| stats count, dc(message) as unique_apis, min(timestamp) as timestamp by user, src_ip
 | where count > 50 AND unique_apis > 10
 | risk score=55 entity=user factor="Cloud API enumeration"
 | where unique_apis > 30

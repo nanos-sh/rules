@@ -27,7 +27,7 @@ ai_triage_hints:
 ---
 source_type=okta OR source_type=azure_ad OR source_type=auth_logs
 | where action="mfa_challenge" OR action="mfa_push"
-| stats count by user, src_ip
+| stats count, min(timestamp) as timestamp by user, src_ip
 | where count > 5
 | risk score=70 entity=user factor="MFA push fatigue"
 | where count > 10

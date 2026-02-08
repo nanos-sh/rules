@@ -28,7 +28,7 @@ ai_triage_hints:
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="ldap_query" OR action="directory_read"
-| stats count by src_host, user
+| stats count, min(timestamp) as timestamp by src_host, user
 | where count > 100
 | risk score=55 entity=src_host factor="High-volume LDAP queries"
 | where count > 500

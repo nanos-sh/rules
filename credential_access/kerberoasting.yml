@@ -27,7 +27,7 @@ ai_triage_hints:
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="ticket_request" AND auth_type="tgs"
-| stats count, dc(dest_host) as unique_targets by user, src_ip
+| stats count, dc(dest_host) as unique_targets, min(timestamp) as timestamp by user, src_ip
 | where count > 10 AND unique_targets > 5
 | risk score=75 entity=user factor="Multiple TGS requests"
 | where unique_targets > 15

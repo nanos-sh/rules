@@ -28,7 +28,7 @@ ai_triage_hints:
 source_type=vpn_logs OR source_type=firewall OR source_type=auth_logs
 | where action="login" AND status="failure"
 | where source_type CONTAINS "vpn" OR message CONTAINS "VPN" OR dest_port IN (443, 1194, 500, 4500)
-| stats count, dc(user) as unique_users by src_ip
+| stats count, dc(user) as unique_users, min(timestamp) as timestamp by src_ip
 | where count > 20
 | risk score=65 entity=src_ip factor="VPN brute force"
 | where unique_users > 5
