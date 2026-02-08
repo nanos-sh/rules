@@ -1,0 +1,36 @@
+---
+title: powershell_constrained_language_bypass
+description: Detects attempts to bypass PowerShell Constrained Language Mode using known techniques.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1059.001
+  - T1562.001
+tags:
+  - powershell
+  - bypass
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Developer testing PowerShell scripts in full language mode"
+  suspicious_when:
+    - "Multiple bypass techniques in single session"
+    - "Followed by suspicious script execution"
+  context: "Constrained Language Mode limits PowerShell attack surface. Bypassing it indicates intent to run advanced attack tools."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="powershell.exe" OR process_name="pwsh.exe"
+| where command_line CONTAINS "__PSLockdownPolicy" OR command_line CONTAINS "FullLanguage" OR command_line CONTAINS "LanguageMode" OR command_line CONTAINS "Set-ExecutionPolicy Bypass"
+| risk score=80 entity=src_host factor="CLM bypass attempt"
+| where command_line CONTAINS "Add-Type" OR command_line CONTAINS "[Reflection.Assembly]"
+| risk score=90 factor="Reflection-based bypass"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

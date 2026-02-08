@@ -1,0 +1,34 @@
+---
+title: protocol_tunneling_detection
+description: Detects tunneling tools that encapsulate traffic within allowed protocols (HTTP, DNS, ICMP).
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0011
+mitre_techniques:
+  - T1572
+tags:
+  - tunneling
+  - c2
+  - evasion
+ai_triage_hints:
+  ignore_when:
+    - "Known VPN or approved tunneling tool"
+    - "IT-managed remote access solution"
+  suspicious_when:
+    - "Unknown tunneling tool detected"
+    - "Tunneling to external IP"
+  context: "Protocol tunneling hides C2 within legitimate traffic. Check what traffic is being tunneled and to where."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where command_line CONTAINS "chisel" OR command_line CONTAINS "ngrok" OR command_line CONTAINS "plink" OR command_line CONTAINS "proxychains" OR command_line CONTAINS "socat" OR command_line CONTAINS "iodine" OR command_line CONTAINS "dnscat"
+| risk score=80 entity=src_host factor="Tunneling tool detected"
+| where command_line CONTAINS "http" OR command_line CONTAINS "socks"
+| risk score=85 factor="Active tunnel configuration"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

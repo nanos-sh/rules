@@ -1,0 +1,35 @@
+---
+title: kerberoasting_activity
+description: Detects Kerberos service ticket requests (TGS) for multiple SPNs, indicative of Kerberoasting attacks.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 15m
+folder: identity
+mitre_tactics:
+  - TA0006
+mitre_techniques:
+  - T1558.003
+tags:
+  - kerberos
+  - kerberoasting
+  - active_directory
+ai_triage_hints:
+  ignore_when:
+    - "Service account performing legitimate ticket requests"
+    - "Known vulnerability scanner activity"
+  suspicious_when:
+    - "Single user requesting many service tickets"
+    - "Tickets requested with RC4 encryption"
+  context: "Kerberoasting extracts service account password hashes. Check if the targeted SPNs have weak passwords."
+---
+source_type=windows_security OR source_type=auth_logs
+| where action="ticket_request" AND auth_type="tgs"
+| stats count, dc(dest_host) as unique_targets by user, src_ip
+| where count > 10 AND unique_targets > 5
+| risk score=75 entity=user factor="Multiple TGS requests"
+| where unique_targets > 15
+| risk score=90 factor="Likely Kerberoasting"
+| table timestamp, user, src_ip, count, unique_targets, risk_score, risk_factors

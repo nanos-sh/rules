@@ -1,0 +1,35 @@
+---
+title: xsl_script_processing
+description: Detects msxsl.exe or wmic executing XSL stylesheets, which can contain embedded scripts for code execution.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1220
+tags:
+  - xsl
+  - lolbin
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "XSL processing is part of known application workflow"
+  suspicious_when:
+    - "XSL file is from temp or user-writable directory"
+    - "WMIC format parameter points to remote XSL"
+  context: "XSL files can contain JScript/VBScript. This is an uncommon but effective bypass for application whitelisting."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where (process_name="msxsl.exe") OR (process_name="wmic.exe" AND command_line CONTAINS "/format:")
+| where command_line CONTAINS ".xsl"
+| risk score=80 entity=src_host factor="XSL script processing"
+| where command_line CONTAINS "http"
+| risk score=90 factor="Remote XSL"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

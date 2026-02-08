@@ -1,0 +1,34 @@
+---
+title: suid_sgid_binary_creation
+description: Detects creation of new SUID/SGID binaries on Linux systems.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0004
+mitre_techniques:
+  - T1548.001
+tags:
+  - suid
+  - linux
+  - privilege_escalation
+ai_triage_hints:
+  ignore_when:
+    - "SUID set by package manager during install"
+    - "Known deployment tool setting permissions"
+  suspicious_when:
+    - "SUID set on shell or interpreter"
+    - "Binary is in non-standard location"
+  context: "SUID binaries run as the file owner. Creating SUID root binaries is a classic privilege escalation technique."
+---
+source_type=linux_audit OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="chmod" AND (command_line CONTAINS "+s" OR command_line CONTAINS "4755" OR command_line CONTAINS "2755" OR command_line CONTAINS "u+s")
+| risk score=70 entity=src_host factor="SUID/SGID binary created"
+| where command_line CONTAINS "/tmp" OR command_line CONTAINS "/dev/shm" OR command_line CONTAINS "/var/tmp"
+| risk score=90 factor="SUID in temp directory"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

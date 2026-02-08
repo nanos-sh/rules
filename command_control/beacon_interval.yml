@@ -1,0 +1,37 @@
+---
+title: regular_beacon_interval_detection
+description: Detects network connections with regular beacon-like timing patterns characteristic of C2 implants.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 1h
+folder: network
+mitre_tactics:
+  - TA0011
+mitre_techniques:
+  - T1095
+tags:
+  - beacon
+  - c2
+  - network
+ai_triage_hints:
+  ignore_when:
+    - "Known heartbeat from monitoring agent"
+    - "NTP or time sync traffic"
+  suspicious_when:
+    - "Regular intervals to low-prevalence domain"
+    - "Small consistent payload sizes"
+  context: "C2 beacons check in at regular intervals. Even with jitter, the pattern is detectable over time."
+---
+source_type=firewall OR source_type=proxy OR source_type=network_flow
+| where dest_ip!=/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/
+| stats count, dc(timestamp) as unique_times by src_host, dest_ip, dest_port
+| where count > 20 AND unique_times > 15
+| prevalence enrich=true window=30d
+| where host_count < 5
+| risk score=70 entity=src_host factor="Regular beacon pattern"
+| where host_count < 2
+| risk score=85 factor="Unique destination with beaconing"
+| table timestamp, src_host, dest_ip, dest_port, count, unique_times, host_count, risk_score, risk_factors

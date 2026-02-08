@@ -1,0 +1,37 @@
+---
+title: host_firewall_rule_modification
+description: Detects modifications to the Windows firewall including adding allow rules or disabling profiles.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1562.004
+tags:
+  - firewall
+  - defense_evasion
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Firewall change is from GPO deployment"
+    - "Software installer adding legitimate firewall rule"
+  suspicious_when:
+    - "Firewall profile disabled entirely"
+    - "Allow rule for non-standard ports"
+  context: "Firewall modifications may enable C2 communications or lateral movement. Check what traffic the new rule allows."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="netsh.exe" AND command_line CONTAINS "firewall"
+| where command_line CONTAINS "add" OR command_line CONTAINS "set" OR command_line CONTAINS "disable"
+| risk score=50 entity=src_host factor="Firewall rule modified"
+| where command_line CONTAINS "disable" AND command_line CONTAINS "profile"
+| risk score=80 factor="Firewall profile disabled"
+| where command_line CONTAINS "allow" AND command_line CONTAINS "any"
+| risk score=75 factor="Broad allow rule added"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

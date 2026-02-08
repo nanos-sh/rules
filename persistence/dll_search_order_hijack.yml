@@ -1,0 +1,37 @@
+---
+title: dll_search_order_hijacking
+description: Detects DLL files created in application directories that may hijack the DLL search order.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0003
+  - TA0004
+mitre_techniques:
+  - T1574.001
+tags:
+  - dll_hijack
+  - persistence
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "DLL is from software update or patch"
+    - "File is signed by the application vendor"
+  suspicious_when:
+    - "DLL has low prevalence"
+    - "DLL name matches a known hijackable DLL"
+  context: "DLL search order hijacking places a malicious DLL where a legitimate application will load it. Check the DLL hash and signing status."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where file_action="create" AND file_path CONTAINS ".dll"
+| where file_path NOT CONTAINS "System32" AND file_path NOT CONTAINS "SysWOW64" AND file_path NOT CONTAINS "WinSxS"
+| prevalence enrich=true window=30d
+| where host_count < 5
+| risk score=70 entity=src_host factor="Rare DLL created"
+| where file_path CONTAINS "Program Files"
+| risk score=85 factor="DLL in application directory"
+| table timestamp, src_host, user, file_path, file_hash, process_name, host_count, risk_score, risk_factors

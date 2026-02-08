@@ -1,0 +1,37 @@
+---
+title: sudo_privilege_escalation_abuse
+description: Detects suspicious sudo usage patterns including sudo to non-standard users or sudo with suspicious commands.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0004
+mitre_techniques:
+  - T1548.003
+tags:
+  - sudo
+  - linux
+  - privilege_escalation
+ai_triage_hints:
+  ignore_when:
+    - "Admin performing routine maintenance"
+    - "Known automation using sudo"
+  suspicious_when:
+    - "sudo to non-root user account"
+    - "sudo running shell or network commands"
+  context: "Unusual sudo patterns may indicate privilege escalation. Check if the user should have sudo access."
+---
+source_type=linux_audit OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="sudo"
+| where command_line CONTAINS "bash" OR command_line CONTAINS "sh -c" OR command_line CONTAINS "python" OR command_line CONTAINS "perl"
+| risk score=45 entity=src_host factor="Sudo shell execution"
+| where command_line CONTAINS "-u" AND command_line NOT CONTAINS "-u root"
+| risk score=70 factor="Sudo to non-root user"
+| where command_line CONTAINS "chmod" AND command_line CONTAINS "+s"
+| risk score=90 factor="SUID bit modification via sudo"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

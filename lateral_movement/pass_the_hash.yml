@@ -1,0 +1,34 @@
+---
+title: pass_the_hash_detection
+description: Detects indicators of Pass-the-Hash attacks based on NTLM authentication anomalies.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: identity
+mitre_tactics:
+  - TA0008
+mitre_techniques:
+  - T1550.002
+tags:
+  - pth
+  - ntlm
+  - lateral_movement
+ai_triage_hints:
+  ignore_when:
+    - "Service account with known NTLM usage"
+    - "Legacy application requiring NTLM"
+  suspicious_when:
+    - "NTLM auth when Kerberos is expected"
+    - "Admin account using NTLM from workstation"
+  context: "Pass-the-Hash uses stolen NTLM hashes to authenticate. NTLM usage where Kerberos is expected is a key indicator."
+---
+source_type=windows_security OR source_type=auth_logs
+| where action="login" AND auth_type="ntlm" AND status="success"
+| where user CONTAINS "admin" OR user CONTAINS "svc"
+| risk score=60 entity=user factor="NTLM auth for privileged account"
+| where src_host CONTAINS "ws" OR src_host CONTAINS "desktop"
+| risk score=80 factor="Admin NTLM from workstation"
+| table timestamp, user, src_ip, src_host, dest_host, auth_type, risk_score, risk_factors

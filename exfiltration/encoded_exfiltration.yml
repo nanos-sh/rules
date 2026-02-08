@@ -1,0 +1,35 @@
+---
+title: base64_encoded_data_transfer
+description: Detects command-line tools sending base64-encoded data to external hosts, potential encoded exfiltration.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0010
+mitre_techniques:
+  - T1048
+tags:
+  - encoding
+  - exfiltration
+  - base64
+ai_triage_hints:
+  ignore_when:
+    - "Known API client sending encoded payloads"
+    - "Development or testing activity"
+  suspicious_when:
+    - "Base64 data sent to external IP"
+    - "Large encoded payload in URL parameter"
+  context: "Base64 encoding can bypass DLP that looks for raw sensitive data. Decode the content to understand what was exfiltrated."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where (process_name="curl.exe" OR process_name="wget.exe" OR process_name="Invoke-WebRequest") AND command_line CONTAINS "base64"
+| where command_line CONTAINS "http"
+| risk score=60 entity=src_host factor="Encoded data transfer"
+| where command_line CONTAINS "POST"
+| risk score=75 factor="Encoded POST to external"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

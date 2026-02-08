@@ -1,0 +1,37 @@
+---
+title: iso_image_mount_and_execution
+description: Detects ISO/IMG file mounting followed by execution of contained files, a common phishing delivery mechanism.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0001
+  - TA0005
+mitre_techniques:
+  - T1553.005
+tags:
+  - iso
+  - motw_bypass
+  - phishing
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Known software distributed as ISO"
+    - "IT admin mounting system images"
+  suspicious_when:
+    - "ISO from email or download"
+    - "LNK or script inside mounted ISO"
+  context: "ISO files bypass Mark-of-the-Web, allowing contained files to execute without SmartScreen warnings."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where process_path CONTAINS ":\Users\" AND process_path=~/[D-Z]:\/
+| where process_name=/(\.exe|\.lnk|\.bat|\.cmd|\.vbs|\.js|\.ps1)$/i
+| risk score=65 entity=src_host factor="Execution from mounted image"
+| where parent_process="explorer.exe"
+| risk score=80 factor="User-initiated ISO execution"
+| table timestamp, src_host, user, process_name, process_path, parent_process, command_line, risk_score, risk_factors

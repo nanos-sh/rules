@@ -1,0 +1,36 @@
+---
+title: suspicious_data_archiving
+description: Detects creation of archive files (zip, 7z, rar) that may be staging for exfiltration.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0009
+  - TA0010
+mitre_techniques:
+  - T1560.001
+tags:
+  - archive
+  - staging
+  - exfiltration
+ai_triage_hints:
+  ignore_when:
+    - "Normal backup or deployment process"
+    - "User archiving their own project files"
+  suspicious_when:
+    - "Archive created from sensitive directories"
+    - "Archive created by scripting engine"
+  context: "Data staging before exfiltration often involves archiving. Check what directories were archived and where the archive was sent."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where process_name IN ("7z.exe", "7za.exe", "rar.exe", "zip.exe") OR (process_name="powershell.exe" AND command_line CONTAINS "Compress-Archive")
+| where command_line CONTAINS "Documents" OR command_line CONTAINS "Desktop" OR command_line CONTAINS "Finance" OR command_line CONTAINS "HR" OR command_line CONTAINS "Confidential"
+| risk score=60 entity=src_host factor="Suspicious data archiving"
+| where command_line CONTAINS "-p" OR command_line CONTAINS "-password"
+| risk score=80 factor="Password-protected archive"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

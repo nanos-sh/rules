@@ -1,0 +1,36 @@
+---
+title: installutil_suspicious_execution
+description: Detects InstallUtil.exe being used to execute code, bypassing application whitelisting.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1218.004
+tags:
+  - installutil
+  - lolbin
+  - dotnet
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "InstallUtil is installing a known .NET service"
+  suspicious_when:
+    - "Target assembly is in temp or user directory"
+    - "Using /U (uninstall) parameter for code execution"
+  context: "InstallUtil can execute arbitrary .NET code through installer classes. The /U flag is commonly abused as it doesn't require admin privileges."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="InstallUtil.exe"
+| where command_line CONTAINS "Temp" OR command_line CONTAINS "AppData" OR command_line CONTAINS "/U" OR command_line CONTAINS "/LogFile="
+| risk score=75 entity=src_host factor="Suspicious InstallUtil execution"
+| where command_line CONTAINS "/U"
+| risk score=85 factor="Uninstall parameter abuse"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

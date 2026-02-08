@@ -1,0 +1,36 @@
+---
+title: rundll32_unusual_dll_execution
+description: Detects rundll32.exe loading DLLs from unusual paths or with suspicious export functions.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1218.011
+tags:
+  - rundll32
+  - lolbin
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "DLL is from Program Files or System32"
+    - "Known software update or installer activity"
+  suspicious_when:
+    - "DLL loaded from Temp, Downloads, or AppData"
+    - "Export function name is random or obfuscated"
+  context: "rundll32 can load arbitrary DLLs. Attackers use it to execute malicious code while appearing as a legitimate Windows process."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="rundll32.exe"
+| where command_line CONTAINS "Temp" OR command_line CONTAINS "AppData" OR command_line CONTAINS "Downloads" OR command_line CONTAINS "ProgramData"
+| risk score=60 entity=src_host factor="Rundll32 unusual path"
+| where command_line CONTAINS "javascript" OR command_line CONTAINS "vbscript"
+| risk score=90 factor="Script protocol handler"
+| table timestamp, src_host, user, parent_process, command_line, risk_score, risk_factors

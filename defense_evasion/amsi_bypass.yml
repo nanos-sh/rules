@@ -1,0 +1,35 @@
+---
+title: amsi_bypass_detection
+description: Detects attempts to bypass the Antimalware Scan Interface (AMSI) in PowerShell or .NET.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1562.001
+tags:
+  - amsi
+  - bypass
+  - powershell
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Security researcher testing AMSI integration"
+  suspicious_when:
+    - "AMSI bypass followed by encoded command execution"
+    - "Multiple bypass techniques in single session"
+  context: "AMSI allows security products to scan script content. Bypassing it enables execution of detected malware."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="powershell.exe" OR process_name="pwsh.exe"
+| where command_line CONTAINS "AmsiUtils" OR command_line CONTAINS "amsiInitFailed" OR command_line CONTAINS "AmsiScanBuffer" OR command_line CONTAINS "SetValue.*NonPublic"
+| risk score=85 entity=src_host factor="AMSI bypass attempt"
+| where command_line CONTAINS "Reflection" AND command_line CONTAINS "NonPublic"
+| risk score=90 factor="Reflection-based AMSI bypass"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

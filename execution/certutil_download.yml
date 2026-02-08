@@ -1,0 +1,39 @@
+---
+title: certutil_file_download
+description: Detects certutil.exe being used to download files from the internet, a common LOLBin technique.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0011
+mitre_techniques:
+  - T1105
+  - T1140
+tags:
+  - certutil
+  - lolbin
+  - download
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "certutil is verifying or managing certificates"
+    - "Download is from internal PKI infrastructure"
+  suspicious_when:
+    - "URL points to external hosting or paste site"
+    - "Downloaded file has executable extension"
+  context: "certutil is a signed Microsoft binary commonly abused for downloading payloads. Check the URL and downloaded file content."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="certutil.exe"
+| where command_line CONTAINS "-urlcache" OR command_line CONTAINS "-verifyctl" OR command_line CONTAINS "url"
+| where command_line CONTAINS "http"
+| risk score=80 entity=src_host factor="Certutil file download"
+| where command_line CONTAINS ".exe" OR command_line CONTAINS ".dll" OR command_line CONTAINS ".ps1"
+| risk score=90 factor="Executable download"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

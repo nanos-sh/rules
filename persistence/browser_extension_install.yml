@@ -1,0 +1,35 @@
+---
+title: suspicious_browser_extension_installation
+description: Detects installation of browser extensions outside of normal web store flow, potentially malicious.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 30m
+folder: endpoint
+mitre_tactics:
+  - TA0003
+mitre_techniques:
+  - T1176
+tags:
+  - browser
+  - extension
+  - persistence
+ai_triage_hints:
+  ignore_when:
+    - "Extension installed via enterprise GPO policy"
+    - "Known security or productivity extension"
+  suspicious_when:
+    - "Extension installed via command line or script"
+    - "Extension files have low prevalence"
+  context: "Malicious browser extensions can steal credentials, inject ads, and maintain persistence. Check the extension ID and permissions."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where file_action="create"
+| where file_path CONTAINS "\Extensions\" AND file_path CONTAINS "manifest.json"
+| where process_name NOT IN ("chrome.exe", "msedge.exe", "firefox.exe")
+| risk score=65 entity=src_host factor="Extension installed outside browser"
+| where process_name IN ("powershell.exe", "cmd.exe", "wscript.exe")
+| risk score=85 factor="Script installed extension"
+| table timestamp, src_host, user, file_path, process_name, risk_score, risk_factors

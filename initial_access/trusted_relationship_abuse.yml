@@ -1,0 +1,38 @@
+---
+title: trusted_relationship_lateral_access
+description: Detects access from partner or vendor networks that deviates from normal patterns.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 30m
+folder: network
+mitre_tactics:
+  - TA0001
+mitre_techniques:
+  - T1199
+tags:
+  - supply_chain
+  - partner
+  - trusted_access
+ai_triage_hints:
+  ignore_when:
+    - "Normal partner access during business hours"
+    - "Known vendor maintenance window"
+  suspicious_when:
+    - "Access to systems outside normal scope"
+    - "Off-hours access from partner network"
+  context: "Trusted relationships can be exploited when partner credentials are compromised. Verify with the partner."
+---
+source_type=vpn_logs OR source_type=firewall OR source_type=auth_logs
+| where action="login" AND status="success"
+| where user CONTAINS "vendor" OR user CONTAINS "partner" OR user CONTAINS "contractor" OR user CONTAINS "ext_"
+| risk score=35 entity=user factor="Third-party access"
+| eval hour = tonumber(strftime(timestamp, "%H"))
+| where hour < 7 OR hour > 19
+| risk score=65 factor="Off-hours third-party access"
+| eval day = tonumber(strftime(timestamp, "%w"))
+| where day = 0 OR day = 6
+| risk score=75 factor="Weekend third-party access"
+| table timestamp, user, src_ip, dest_host, hour, risk_score, risk_factors

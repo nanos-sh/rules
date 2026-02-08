@@ -1,0 +1,37 @@
+---
+title: suspicious_cron_job_creation
+description: Detects creation of cron jobs with suspicious commands or by unusual processes.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0003
+  - TA0002
+mitre_techniques:
+  - T1053.003
+tags:
+  - cron
+  - linux
+  - persistence
+ai_triage_hints:
+  ignore_when:
+    - "Cron job is from package manager or system update"
+    - "Known automation tool creating scheduled task"
+  suspicious_when:
+    - "Cron command includes network activity (curl, wget)"
+    - "Cron command runs encoded or obfuscated script"
+  context: "Cron jobs provide reliable persistence on Linux. Check the command being scheduled and who created it."
+---
+source_type=linux_audit OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="crontab" OR file_path CONTAINS "/cron.d/" OR file_path CONTAINS "/crontab"
+| risk score=45 entity=src_host factor="Cron job modified"
+| where command_line CONTAINS "curl" OR command_line CONTAINS "wget" OR command_line CONTAINS "nc " OR command_line CONTAINS "python"
+| risk score=75 factor="Network command in cron"
+| where command_line CONTAINS "base64" OR command_line CONTAINS "|sh" OR command_line CONTAINS "|bash"
+| risk score=85 factor="Encoded or piped execution"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

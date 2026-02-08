@@ -1,0 +1,36 @@
+---
+title: renamed_windows_system_binary
+description: Detects execution of renamed system binaries where the original filename in metadata doesn't match the process name on disk.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1036.003
+tags:
+  - masquerading
+  - renamed_binary
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Software that legitimately renames binaries during install"
+    - "Known developer tool that uses renamed copies"
+  suspicious_when:
+    - "Original name is cmd.exe, powershell.exe, or other system tool"
+    - "File is in a non-standard location"
+  context: "Renamed system binaries evade detection rules that match on process name. The original filename in PE metadata reveals the true identity."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where original_file_name != "" AND process_name != original_file_name
+| where original_file_name IN ("cmd.exe", "powershell.exe", "pwsh.exe", "rundll32.exe", "regsvr32.exe", "mshta.exe", "certutil.exe", "wmic.exe")
+| risk score=75 entity=src_host factor="Renamed system binary"
+| where process_path NOT CONTAINS "System32" AND process_path NOT CONTAINS "SysWOW64"
+| risk score=85 factor="Non-standard path"
+| table timestamp, src_host, user, process_name, original_file_name, process_path, command_line, risk_score, risk_factors

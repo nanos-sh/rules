@@ -1,0 +1,35 @@
+---
+title: office_application_spawning_child_process
+description: Detects Microsoft Office applications spawning suspicious child processes like cmd, powershell, or scripting engines.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+mitre_techniques:
+  - T1204.002
+tags:
+  - office
+  - macro
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Child process is known Office add-in or plugin"
+    - "User is developer with VBA macros"
+  suspicious_when:
+    - "Child is powershell, cmd, wscript, or cscript"
+    - "Child process makes network connections"
+  context: "Office spawning shells typically indicates macro execution. Check the document that was opened and whether it came from email."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where parent_process IN ("winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe", "msaccess.exe")
+| where process_name IN ("cmd.exe", "powershell.exe", "pwsh.exe", "wscript.exe", "cscript.exe", "mshta.exe", "regsvr32.exe", "rundll32.exe")
+| risk score=80 entity=src_host factor="Office spawned shell"
+| where process_name IN ("powershell.exe", "pwsh.exe")
+| risk score=90 factor="Office spawned PowerShell"
+| table timestamp, src_host, user, parent_process, process_name, command_line, risk_score, risk_factors

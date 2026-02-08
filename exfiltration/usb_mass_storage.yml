@@ -1,0 +1,34 @@
+---
+title: usb_mass_storage_data_copy
+description: Detects USB mass storage device connections and potential data copy operations.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0010
+mitre_techniques:
+  - T1052.001
+tags:
+  - usb
+  - removable_media
+  - exfiltration
+ai_triage_hints:
+  ignore_when:
+    - "Known authorized USB device"
+    - "IT admin using USB for system maintenance"
+  suspicious_when:
+    - "USB device connected to sensitive system"
+    - "Large file copies after USB connection"
+  context: "USB devices can exfiltrate large amounts of data quickly. Check what files were accessed and copied."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="device_connect" OR action="usb_connect"
+| where message CONTAINS "Mass Storage" OR message CONTAINS "USBSTOR" OR message CONTAINS "RemovableMedia"
+| risk score=40 entity=src_host factor="USB mass storage connected"
+| where src_host CONTAINS "srv" OR src_host CONTAINS "server" OR src_host CONTAINS "dc"
+| risk score=70 factor="USB on server system"
+| table timestamp, src_host, user, message, risk_score, risk_factors

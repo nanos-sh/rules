@@ -1,0 +1,34 @@
+---
+title: reverse_shell_connection
+description: Detects patterns consistent with reverse shell connections including stdin/stdout redirection over network.
+author: nanos.sh
+severity: critical
+mode: live
+detection_mode: scheduled
+schedule: "*/1 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0011
+  - TA0002
+mitre_techniques:
+  - T1059
+tags:
+  - reverse_shell
+  - c2
+  - cross_platform
+ai_triage_hints:
+  ignore_when:
+    - "Authorized remote management tool"
+  suspicious_when:
+    - "Shell with network redirection"
+    - "Netcat or socat with shell command"
+  context: "Reverse shells provide interactive access to attackers. This is active compromise and requires immediate response."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon OR source_type=linux_audit
+| where action="process_create"
+| where command_line CONTAINS "nc -e" OR command_line CONTAINS "ncat -e" OR command_line CONTAINS "/dev/tcp/" OR command_line CONTAINS "bash -i" OR command_line CONTAINS "mkfifo" OR command_line CONTAINS "socket" AND command_line CONTAINS "subprocess"
+| risk score=90 entity=src_host factor="Reverse shell detected"
+| where command_line CONTAINS "/dev/tcp/"
+| risk score=95 factor="Bash reverse shell"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

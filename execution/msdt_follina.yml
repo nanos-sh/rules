@@ -1,0 +1,36 @@
+---
+title: msdt_diagnostic_tool_abuse
+description: Detects Microsoft Support Diagnostic Tool (msdt.exe) execution with suspicious parameters, associated with Follina and similar exploits.
+author: nanos.sh
+severity: critical
+mode: live
+detection_mode: scheduled
+schedule: "*/1 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+mitre_techniques:
+  - T1203
+tags:
+  - msdt
+  - follina
+  - exploit
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "User manually launched diagnostics from control panel"
+    - "IT support initiated the diagnostic session"
+  suspicious_when:
+    - "msdt launched by Office application"
+    - "Command contains PCWDiagnostic or IT_BrowseForFile"
+  context: "Follina (CVE-2022-30190) abuses msdt.exe for code execution. If Office spawned msdt, this is very likely exploitation."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="msdt.exe"
+| where command_line CONTAINS "PCWDiagnostic" OR command_line CONTAINS "IT_BrowseForFile" OR command_line CONTAINS "ms-msdt:"
+| risk score=90 entity=src_host factor="MSDT abuse (Follina-like)"
+| where parent_process IN ("winword.exe", "excel.exe", "outlook.exe")
+| risk score=95 factor="Office parent - likely exploitation"
+| table timestamp, src_host, user, parent_process, command_line, risk_score, risk_factors

@@ -1,0 +1,35 @@
+---
+title: domain_admin_group_enumeration
+description: Detects enumeration of privileged Active Directory groups like Domain Admins and Enterprise Admins.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: identity
+mitre_tactics:
+  - TA0007
+mitre_techniques:
+  - T1069.002
+tags:
+  - group_enumeration
+  - active_directory
+  - privilege_recon
+ai_triage_hints:
+  ignore_when:
+    - "IT admin checking group membership"
+    - "Known audit or compliance tool"
+  suspicious_when:
+    - "Targeting Domain Admins or Enterprise Admins"
+    - "Multiple admin groups enumerated in sequence"
+  context: "Enumerating admin groups identifies high-value targets for credential theft. Common pre-attack reconnaissance."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name IN ("net.exe", "net1.exe") AND command_line CONTAINS "group"
+| where command_line CONTAINS "domain admins" OR command_line CONTAINS "enterprise admins" OR command_line CONTAINS "schema admins" OR command_line CONTAINS "administrators"
+| risk score=55 entity=src_host factor="Admin group enumeration"
+| where command_line CONTAINS "/domain"
+| risk score=70 factor="Domain admin group query"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

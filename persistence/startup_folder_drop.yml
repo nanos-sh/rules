@@ -1,0 +1,37 @@
+---
+title: file_dropped_in_startup_folder
+description: Detects files created in Windows Startup folders for persistence.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0003
+mitre_techniques:
+  - T1547.001
+tags:
+  - startup
+  - persistence
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "File is a known application shortcut"
+    - "Created during software installation"
+  suspicious_when:
+    - "File is a script (.vbs, .js, .bat, .ps1)"
+    - "File was recently downloaded or created by browser"
+  context: "Files in Startup folders execute at logon. Check the file content and how it arrived there."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where file_action="create"
+| where file_path CONTAINS "\Start Menu\Programs\Startup\"
+| risk score=60 entity=src_host factor="Startup folder persistence"
+| where file_path=/(\.exe|\.bat|\.cmd|\.vbs|\.js|\.ps1|\.hta)$/i
+| risk score=80 factor="Executable in startup"
+| prevalence enrich=true window=30d
+| where host_count < 5
+| risk score=90 factor="Rare file in startup"
+| table timestamp, src_host, user, file_path, file_hash, process_name, host_count, risk_score, risk_factors

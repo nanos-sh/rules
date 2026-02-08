@@ -1,0 +1,33 @@
+---
+title: cryptomining_resource_hijacking
+description: Detects cryptocurrency mining activity hijacking system resources.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 30m
+folder: endpoint
+mitre_tactics:
+  - TA0040
+mitre_techniques:
+  - T1496
+tags:
+  - cryptomining
+  - resource_hijack
+  - cross_platform
+ai_triage_hints:
+  ignore_when:
+    - "Authorized mining operation"
+  suspicious_when:
+    - "Mining on production server"
+    - "High CPU with mining pool connections"
+  context: "Cryptomining steals compute resources and increases costs. Check for unauthorized access that deployed the miner."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where command_line CONTAINS "stratum" OR command_line CONTAINS "xmrig" OR command_line CONTAINS "minerd" OR command_line CONTAINS "cpuminer" OR command_line CONTAINS "cryptonight" OR command_line CONTAINS "pool.minergate"
+| risk score=70 entity=src_host factor="Cryptomining detected"
+| where src_host CONTAINS "srv" OR src_host CONTAINS "server" OR src_host CONTAINS "prod"
+| risk score=85 factor="Mining on server"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

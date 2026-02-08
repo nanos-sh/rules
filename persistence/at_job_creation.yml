@@ -1,0 +1,35 @@
+---
+title: at_job_scheduled_execution
+description: Detects creation of at jobs for one-time scheduled execution, sometimes used for persistence or delayed execution.
+author: nanos.sh
+severity: low
+mode: live
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 30m
+folder: endpoint
+mitre_tactics:
+  - TA0003
+  - TA0002
+mitre_techniques:
+  - T1053.002
+tags:
+  - at_job
+  - scheduled
+  - cross_platform
+ai_triage_hints:
+  ignore_when:
+    - "at job is from known automation workflow"
+    - "IT admin scheduling maintenance task"
+  suspicious_when:
+    - "Job runs shell commands with network activity"
+    - "Created by non-admin user"
+  context: "at jobs provide one-time scheduled execution. While less persistent than cron, they can delay malicious execution."
+---
+source_type=linux_audit OR source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where process_name="at" OR process_name="at.exe"
+| risk score=35 entity=src_host factor="at job created"
+| where command_line CONTAINS "curl" OR command_line CONTAINS "wget" OR command_line CONTAINS "powershell"
+| risk score=65 factor="Suspicious at job command"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

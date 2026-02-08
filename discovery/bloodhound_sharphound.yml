@@ -1,0 +1,35 @@
+---
+title: bloodhound_sharphound_collection
+description: Detects BloodHound/SharpHound Active Directory enumeration tool execution.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0007
+mitre_techniques:
+  - T1087.002
+  - T1069.002
+tags:
+  - bloodhound
+  - sharphound
+  - ad_enumeration
+ai_triage_hints:
+  ignore_when:
+    - "Authorized red team or pentest engagement"
+    - "IT security team running authorized assessment"
+  suspicious_when:
+    - "SharpHound creating JSON output files"
+    - "LDAP queries matching BloodHound patterns"
+  context: "BloodHound maps AD attack paths. Its use by unauthorized parties indicates active reconnaissance for privilege escalation."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where command_line CONTAINS "SharpHound" OR command_line CONTAINS "bloodhound" OR command_line CONTAINS "Invoke-BloodHound" OR (process_name="sharphound.exe")
+| risk score=85 entity=src_host factor="BloodHound/SharpHound detected"
+| where command_line CONTAINS "-CollectionMethod All"
+| risk score=95 factor="Full AD enumeration"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

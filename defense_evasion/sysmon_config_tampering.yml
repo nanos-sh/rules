@@ -1,0 +1,34 @@
+---
+title: sysmon_configuration_tampering
+description: Detects attempts to stop, uninstall, or modify Sysmon configuration.
+author: nanos.sh
+severity: critical
+mode: live
+detection_mode: scheduled
+schedule: "*/1 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1562.001
+tags:
+  - sysmon
+  - edr_tampering
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "IT admin performing authorized Sysmon update"
+    - "Deploying new Sysmon configuration via GPO"
+  suspicious_when:
+    - "Sysmon being uninstalled without replacement"
+    - "Configuration change removes important event types"
+  context: "Sysmon tampering is a strong indicator of active attacker trying to blind defenses. Investigate immediately."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where (process_name="sysmon.exe" OR process_name="sysmon64.exe") AND (command_line CONTAINS "-u" OR command_line CONTAINS "/u")
+| risk score=90 entity=src_host factor="Sysmon uninstall attempt"
+| where command_line CONTAINS "force"
+| risk score=95 factor="Forced Sysmon uninstall"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

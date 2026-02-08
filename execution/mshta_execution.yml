@@ -1,0 +1,38 @@
+---
+title: mshta_suspicious_execution
+description: Detects mshta.exe executing HTA files from suspicious locations or with inline scripts.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1218.005
+tags:
+  - mshta
+  - lolbin
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "HTA file is part of known enterprise application"
+    - "Execution is from trusted internal path"
+  suspicious_when:
+    - "HTA loaded from URL or temp directory"
+    - "Inline VBScript or JavaScript in command line"
+  context: "mshta.exe is a signed Microsoft binary that can execute arbitrary scripts, making it a popular living-off-the-land technique."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="mshta.exe"
+| where command_line CONTAINS "http" OR command_line CONTAINS "javascript:" OR command_line CONTAINS "vbscript:" OR command_line CONTAINS "Temp"
+| risk score=70 entity=src_host factor="Suspicious mshta execution"
+| where command_line CONTAINS "http://" OR command_line CONTAINS "https://"
+| risk score=85 factor="Remote HTA execution"
+| where parent_process IN ("winword.exe", "excel.exe", "outlook.exe")
+| risk score=95 factor="Office parent process"
+| table timestamp, src_host, user, parent_process, command_line, risk_score, risk_factors

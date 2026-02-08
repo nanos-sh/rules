@@ -1,0 +1,37 @@
+---
+title: keylogger_behavior_indicators
+description: Detects processes exhibiting keylogger behavior such as setting keyboard hooks or accessing input APIs.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: endpoint
+mitre_tactics:
+  - TA0006
+  - TA0009
+mitre_techniques:
+  - T1056.001
+tags:
+  - keylogger
+  - input_capture
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Known accessibility software"
+    - "Remote desktop or KVM software"
+  suspicious_when:
+    - "Unknown process setting keyboard hooks"
+    - "Process has low prevalence"
+  context: "Keyloggers capture typed credentials and sensitive data. Check the process hash and what data it may have captured."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create" OR action="api_call"
+| where command_line CONTAINS "SetWindowsHookEx" OR command_line CONTAINS "GetAsyncKeyState" OR command_line CONTAINS "GetKeyState"
+| prevalence enrich=true window=30d
+| where host_count < 10
+| risk score=70 entity=src_host factor="Potential keylogger"
+| where host_count < 3
+| risk score=90 factor="Rare process with input capture"
+| table timestamp, src_host, process_name, process_hash, host_count, risk_score, risk_factors

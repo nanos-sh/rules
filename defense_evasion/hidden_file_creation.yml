@@ -1,0 +1,34 @@
+---
+title: hidden_file_or_directory_creation
+description: Detects creation of hidden files or directories using attrib or file naming conventions.
+author: nanos.sh
+severity: low
+mode: live
+detection_mode: scheduled
+schedule: "*/10 * * * *"
+lookback: 30m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1564.001
+tags:
+  - hidden_files
+  - evasion
+  - cross_platform
+ai_triage_hints:
+  ignore_when:
+    - "Application creating its own configuration files"
+    - "Known backup or sync tool behavior"
+  suspicious_when:
+    - "Hidden executable file created"
+    - "Hidden directory in non-standard location"
+  context: "Hidden files can conceal malicious tools. Check what created the hidden file and its content."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="attrib.exe" AND command_line CONTAINS "+h"
+| risk score=40 entity=src_host factor="Hidden file/directory created"
+| where command_line CONTAINS ".exe" OR command_line CONTAINS ".dll" OR command_line CONTAINS ".ps1"
+| risk score=70 factor="Hidden executable"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

@@ -1,0 +1,34 @@
+---
+title: access_token_manipulation
+description: Detects processes attempting to manipulate access tokens for privilege escalation.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0004
+mitre_techniques:
+  - T1134
+tags:
+  - token
+  - privilege_escalation
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Process is a known security tool or EDR"
+    - "Token impersonation by IIS or SQL Server"
+  suspicious_when:
+    - "Non-admin process manipulating tokens"
+    - "Token from SYSTEM or Domain Admin"
+  context: "Token manipulation allows running code under another user's security context. Check what process is stealing tokens and why."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create" OR action="process_access"
+| where command_line CONTAINS "token" AND (command_line CONTAINS "duplicate" OR command_line CONTAINS "impersonate" OR command_line CONTAINS "assign")
+| risk score=70 entity=src_host factor="Token manipulation"
+| where process_name NOT IN ("lsass.exe", "csrss.exe", "services.exe", "svchost.exe")
+| risk score=85 factor="Unusual token manipulator"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

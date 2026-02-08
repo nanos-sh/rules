@@ -1,0 +1,36 @@
+---
+title: shell_spawned_by_windows_services
+description: Detects command shells or PowerShell spawned by services.exe, indicating potential service exploitation or persistence.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0003
+mitre_techniques:
+  - T1543.003
+tags:
+  - services
+  - persistence
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Service is a known management agent (SCCM, Intune)"
+    - "Service is running a scheduled maintenance script"
+  suspicious_when:
+    - "Shell command includes network activity or file downloads"
+    - "Service was recently created or modified"
+  context: "Services.exe spawning shells can indicate a malicious service was installed for persistence or exploitation."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where parent_process="services.exe"
+| where process_name IN ("cmd.exe", "powershell.exe", "pwsh.exe")
+| risk score=70 entity=src_host factor="Shell via services"
+| where command_line CONTAINS "-enc" OR command_line CONTAINS "downloadstring" OR command_line CONTAINS "IEX"
+| risk score=90 factor="Suspicious shell command"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

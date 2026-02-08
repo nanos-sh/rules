@@ -1,0 +1,34 @@
+---
+title: disk_wipe_utility_execution
+description: Detects execution of disk wiping tools that destroy data on disk.
+author: nanos.sh
+severity: critical
+mode: live
+detection_mode: scheduled
+schedule: "*/1 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0040
+mitre_techniques:
+  - T1561
+tags:
+  - wiper
+  - destruction
+  - critical
+ai_triage_hints:
+  ignore_when:
+    - "IT decommissioning hardware"
+    - "Authorized data sanitization"
+  suspicious_when:
+    - "Wiper tool on production system"
+    - "Disk wipe without change management"
+  context: "CRITICAL: Disk wipers destroy data permanently. Isolate the host and check for spreading to other systems."
+---
+source_type=endpoint_edr OR source_type=windows_sysmon
+| where action="process_create"
+| where process_name IN ("sdelete.exe", "cipher.exe", "shred", "dd") OR command_line CONTAINS "format /q" OR command_line CONTAINS "diskpart" AND command_line CONTAINS "clean"
+| risk score=80 entity=src_host factor="Disk wipe tool detected"
+| where command_line CONTAINS "/dev/sda" OR command_line CONTAINS "PhysicalDrive" OR command_line CONTAINS "clean all"
+| risk score=95 factor="Physical disk wipe"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

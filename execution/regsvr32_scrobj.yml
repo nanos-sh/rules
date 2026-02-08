@@ -1,0 +1,37 @@
+---
+title: regsvr32_scrobj_execution
+description: Detects regsvr32 loading scrobj.dll or executing remote scriptlets (Squiblydoo attack).
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0002
+  - TA0005
+mitre_techniques:
+  - T1218.010
+tags:
+  - regsvr32
+  - squiblydoo
+  - lolbin
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "regsvr32 is registering a known legitimate DLL"
+    - "Execution is part of software installation"
+  suspicious_when:
+    - "Loading scrobj.dll with /i parameter"
+    - "Remote URL in command line"
+  context: "Squiblydoo abuses regsvr32 to proxy execution of malicious scripts. The binary is signed by Microsoft and bypasses AppLocker."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name="regsvr32.exe"
+| where command_line CONTAINS "scrobj" OR command_line CONTAINS "/i:http" OR command_line CONTAINS "/i:https"
+| risk score=80 entity=src_host factor="Regsvr32 scriptlet execution"
+| where command_line CONTAINS "http"
+| risk score=90 factor="Remote scriptlet"
+| table timestamp, src_host, user, parent_process, command_line, risk_score, risk_factors

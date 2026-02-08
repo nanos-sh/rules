@@ -1,0 +1,34 @@
+---
+title: windows_defender_disabled
+description: Detects attempts to disable Windows Defender real-time protection or tamper with its configuration.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1562.001
+tags:
+  - defender
+  - antivirus
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "IT deploying alternative AV solution"
+    - "Testing environment with approved policy"
+  suspicious_when:
+    - "Defender disabled by script or command line"
+    - "Multiple Defender features disabled at once"
+  context: "Disabling Defender is often a precursor to deploying malware. Check what happens after Defender is disabled."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create" OR action="registry_set"
+| where command_line CONTAINS "Set-MpPreference" AND (command_line CONTAINS "DisableRealtimeMonitoring" OR command_line CONTAINS "DisableBehaviorMonitoring" OR command_line CONTAINS "DisableIOAVProtection")
+| risk score=85 entity=src_host factor="Defender protection disabled"
+| where command_line CONTAINS "DisableRealtimeMonitoring $true" OR command_line CONTAINS "DisableRealtimeMonitoring 1"
+| risk score=90 factor="Real-time protection disabled"
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

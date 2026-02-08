@@ -1,0 +1,35 @@
+---
+title: wmi_remote_execution
+description: Detects WMI being used for remote process creation across the network.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0008
+mitre_techniques:
+  - T1021.006
+tags:
+  - wmi
+  - remote_execution
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Known management tool using WMI remotely"
+    - "SCCM or MDM agent activity"
+  suspicious_when:
+    - "WMI creating processes on remote hosts"
+    - "Target is sensitive server"
+  context: "WMI provides remote code execution without deploying additional tools. Popular for fileless lateral movement."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where parent_process="wmiprvse.exe"
+| where process_name IN ("cmd.exe", "powershell.exe", "pwsh.exe", "mshta.exe", "rundll32.exe")
+| risk score=70 entity=src_host factor="WMI remote execution"
+| where command_line CONTAINS "-enc" OR command_line CONTAINS "IEX" OR command_line CONTAINS "downloadstring"
+| risk score=90 factor="Suspicious WMI payload"
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

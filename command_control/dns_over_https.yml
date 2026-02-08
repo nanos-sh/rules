@@ -1,0 +1,37 @@
+---
+title: dns_over_https_usage
+description: Detects applications using DNS-over-HTTPS (DoH) to bypass DNS monitoring and filtering.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: network
+mitre_tactics:
+  - TA0011
+mitre_techniques:
+  - T1071.004
+tags:
+  - doh
+  - dns
+  - evasion
+  - network
+ai_triage_hints:
+  ignore_when:
+    - "Browser with DoH enabled by default"
+    - "Corporate DoH resolver"
+  suspicious_when:
+    - "Non-browser process using DoH"
+    - "DoH to non-standard resolver"
+  context: "DoH encrypts DNS queries, bypassing corporate DNS monitoring. Attackers use it to hide C2 communications."
+---
+source_type=proxy OR source_type=firewall
+| where url CONTAINS "dns-query" OR url CONTAINS "resolve?" OR dest_host IN ("1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222")
+| where dest_port=443
+| where url CONTAINS "dns-query"
+| risk score=45 entity=src_host factor="DNS-over-HTTPS detected"
+| prevalence enrich=true window=30d
+| where host_count < 10
+| risk score=65 factor="Uncommon DoH usage"
+| table timestamp, src_host, src_ip, dest_host, url, host_count, risk_score, risk_factors

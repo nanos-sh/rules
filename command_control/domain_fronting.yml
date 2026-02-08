@@ -1,0 +1,36 @@
+---
+title: domain_fronting_detection
+description: Detects domain fronting where the SNI and Host header differ, used to hide C2 behind legitimate domains.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: network
+mitre_tactics:
+  - TA0011
+mitre_techniques:
+  - T1090.004
+tags:
+  - domain_fronting
+  - c2
+  - cdn
+  - network
+ai_triage_hints:
+  ignore_when:
+    - "Known CDN redirect behavior"
+    - "Load balancer routing"
+  suspicious_when:
+    - "SNI is major CDN but Host is unknown domain"
+    - "Traffic to fronted domain has C2 patterns"
+  context: "Domain fronting hides C2 behind CDN domains. The true destination is in the Host header, not the SNI."
+---
+source_type=proxy OR source_type=firewall
+| where dest_host CONTAINS "cloudfront.net" OR dest_host CONTAINS "azureedge.net" OR dest_host CONTAINS "googleapis.com"
+| where url NOT CONTAINS dest_host
+| risk score=70 entity=src_host factor="Potential domain fronting"
+| prevalence enrich=true window=30d
+| where host_count < 5
+| risk score=85 factor="Rare fronted destination"
+| table timestamp, src_host, src_ip, dest_host, url, host_count, risk_score, risk_factors

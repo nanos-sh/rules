@@ -1,0 +1,33 @@
+---
+title: connection_to_tor_network
+description: Detects connections to known Tor entry/exit nodes or Tor browser usage.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 15m
+folder: network
+mitre_tactics:
+  - TA0011
+mitre_techniques:
+  - T1090.003
+tags:
+  - tor
+  - anonymization
+  - network
+ai_triage_hints:
+  ignore_when:
+    - "Authorized security research"
+    - "Known Tor relay operation"
+  suspicious_when:
+    - "Tor from production server"
+    - "Combined with other suspicious activity"
+  context: "Tor provides anonymity for C2 communications. Corporate Tor usage is almost always unauthorized."
+---
+source_type=proxy OR source_type=firewall
+| where dest_port=9001 OR dest_port=9030 OR url CONTAINS ".onion" OR dest_host CONTAINS "torproject.org"
+| risk score=75 entity=src_host factor="Tor network connection"
+| where src_host CONTAINS "srv" OR src_host CONTAINS "server"
+| risk score=90 factor="Server connecting to Tor"
+| table timestamp, src_host, src_ip, user, dest_ip, dest_port, dest_host, risk_score, risk_factors

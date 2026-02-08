@@ -1,0 +1,36 @@
+---
+title: rdp_lateral_movement_pattern
+description: Detects RDP connections between internal hosts that may indicate lateral movement.
+author: nanos.sh
+severity: medium
+mode: live
+detection_mode: scheduled
+schedule: "*/5 * * * *"
+lookback: 30m
+folder: network
+mitre_tactics:
+  - TA0008
+mitre_techniques:
+  - T1021.001
+tags:
+  - rdp
+  - remote_desktop
+  - lateral_movement
+ai_triage_hints:
+  ignore_when:
+    - "IT admin connecting to managed servers"
+    - "Known jump box / bastion host usage"
+  suspicious_when:
+    - "RDP from workstation to workstation"
+    - "First-time RDP connection for this user-host pair"
+  context: "Workstation-to-workstation RDP is uncommon in most environments and often indicates lateral movement."
+---
+source_type=firewall OR source_type=network_flow OR source_type=windows_security
+| where dest_port=3389 AND action="network_connect"
+| where src_ip=/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/ AND dest_ip=/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/
+| prevalence enrich=true window=30d
+| where host_count < 5
+| risk score=55 entity=src_ip factor="Uncommon internal RDP"
+| where host_count < 2
+| risk score=75 factor="First-seen RDP connection"
+| table timestamp, src_ip, src_host, user, dest_ip, dest_host, host_count, risk_score, risk_factors

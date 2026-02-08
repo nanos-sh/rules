@@ -1,0 +1,36 @@
+---
+title: process_injection_detected
+description: Detects signs of process injection including suspicious cross-process access and memory allocation patterns.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/2 * * * *"
+lookback: 5m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+  - TA0004
+mitre_techniques:
+  - T1055
+tags:
+  - injection
+  - memory
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Security tool performing memory scanning"
+    - "Debugger attached to process"
+  suspicious_when:
+    - "Source process is unsigned or rare"
+    - "Target is a system process (svchost, explorer)"
+  context: "Process injection allows code execution in the context of another process. Check what was injected and by whom."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_access"
+| where command_line CONTAINS "CreateRemoteThread" OR command_line CONTAINS "VirtualAllocEx" OR command_line CONTAINS "WriteProcessMemory" OR command_line CONTAINS "NtMapViewOfSection"
+| risk score=75 entity=src_host factor="Process injection detected"
+| prevalence enrich=true window=30d
+| where host_count < 5
+| risk score=90 factor="Rare injector process"
+| table timestamp, src_host, process_name, process_hash, command_line, host_count, risk_score, risk_factors

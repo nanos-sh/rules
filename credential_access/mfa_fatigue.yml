@@ -1,0 +1,37 @@
+---
+title: mfa_push_notification_fatigue
+description: Detects MFA fatigue attacks with repeated push notifications to a user in a short period.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 15m
+folder: identity
+mitre_tactics:
+  - TA0006
+mitre_techniques:
+  - T1621
+tags:
+  - mfa
+  - fatigue
+  - authentication
+ai_triage_hints:
+  ignore_when:
+    - "User having legitimate connectivity issues"
+    - "Known MFA migration or testing"
+  suspicious_when:
+    - "Many push notifications in rapid succession"
+    - "Followed by an approval outside normal hours"
+  context: "MFA fatigue bombards users with push notifications until they accidentally approve. Check if the final approval was legitimate."
+---
+source_type=okta OR source_type=azure_ad OR source_type=auth_logs
+| where action="mfa_challenge" OR action="mfa_push"
+| stats count by user, src_ip
+| where count > 5
+| risk score=70 entity=user factor="MFA push fatigue"
+| where count > 10
+| risk score=85 factor="Severe MFA fatigue attack"
+| where count > 20
+| risk score=95 factor="Extreme MFA bombardment"
+| table timestamp, user, src_ip, count, risk_score, risk_factors

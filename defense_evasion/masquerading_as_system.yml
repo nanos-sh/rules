@@ -1,0 +1,34 @@
+---
+title: masquerading_as_system_process
+description: Detects processes using system binary names but running from incorrect paths.
+author: nanos.sh
+severity: high
+mode: live
+detection_mode: scheduled
+schedule: "*/3 * * * *"
+lookback: 10m
+folder: endpoint
+mitre_tactics:
+  - TA0005
+mitre_techniques:
+  - T1036.005
+tags:
+  - masquerading
+  - evasion
+  - windows
+ai_triage_hints:
+  ignore_when:
+    - "Known software with same-named binary (e.g., sysinternals)"
+  suspicious_when:
+    - "System process name running from user directory"
+    - "Hash doesn't match known Microsoft binary"
+  context: "Attackers name malware after system processes to blend in. The key indicator is the wrong file path."
+---
+source_type=windows_sysmon OR source_type=endpoint_edr
+| where action="process_create"
+| where process_name IN ("svchost.exe", "csrss.exe", "lsass.exe", "smss.exe", "wininit.exe", "taskhost.exe", "conhost.exe")
+| where process_path NOT CONTAINS "\Windows\System32\" AND process_path NOT CONTAINS "\Windows\SysWOW64\"
+| risk score=85 entity=src_host factor="System process from wrong path"
+| where process_path CONTAINS "Temp" OR process_path CONTAINS "AppData"
+| risk score=95 factor="System name in user directory"
+| table timestamp, src_host, user, process_name, process_path, parent_process, risk_score, risk_factors
