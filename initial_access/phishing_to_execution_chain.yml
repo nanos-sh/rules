@@ -41,6 +41,6 @@ source_type=email_gateway OR source_type=endpoint_edr OR source_type=proxy
     [file_action="create" file_path=/\.(exe|scr|bat|cmd|ps1|vbs|js|hta|msi|dll|jar)$/i]
     [action="process_create"]
 | risk score=90 entity=user factor="Complete phishing chain"
-| where sequence_duration < 300
+| where sequence_duration_seconds < 300
 | risk score=95 factor="Rapid execution after download"
-| table timestamp, user, src_host, subject, sender, url, file_path, process_name, sequence_duration, risk_score, risk_factors
+| table timestamp, user, src_host, step1_subject, step1_sender, step2_url, step3_file_path, step4_process_name, sequence_duration_seconds, risk_score, risk_factors

@@ -36,4 +36,4 @@ source_type=windows_sysmon OR source_type=endpoint_edr
     [file_action="create" file_path=/(\.dmp|\.bin|\.log)$/i]
     [action="network_connect" dest_ip!=/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/]
 | risk score=95 entity=src_host factor="LSASS dump with exfil pattern"
-| table timestamp, src_host, process_name, parent_process, file_path, dest_ip, risk_score, risk_factors
+| table timestamp, src_host, step1_process_name, step1_parent_process, step2_file_path, step3_dest_ip, risk_score, risk_factors
