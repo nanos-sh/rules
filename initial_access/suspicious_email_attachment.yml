@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Macro-enabled document (.docm, .xlsm)"
     - "Executable attachment (.exe, .scr, .bat)"
-  context: "Email attachments are the primary initial access vector. Check the sender, subject, and file hash."
 ---
 source_type=email_gateway OR source_type=endpoint_edr
 | where action="email_received" OR action="file_open"

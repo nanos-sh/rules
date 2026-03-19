@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Database dump to non-standard location"
     - "Export by non-DBA user"
-  context: "Database dumps can contain massive amounts of sensitive data. Verify authorization and check where the dump was sent."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

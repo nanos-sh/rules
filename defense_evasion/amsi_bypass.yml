@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "AMSI bypass followed by encoded command execution"
     - "Multiple bypass techniques in single session"
-  context: "AMSI allows security products to scan script content. Bypassing it enables execution of detected malware."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

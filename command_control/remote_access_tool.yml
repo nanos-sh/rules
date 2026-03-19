@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "RAT installed silently without user interaction"
     - "Multiple remote tools on same host"
-  context: "Remote access tools provide full control of the endpoint. Verify the tool is authorized and the connection is legitimate."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

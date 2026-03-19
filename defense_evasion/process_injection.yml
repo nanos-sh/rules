@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Source process is unsigned or rare"
     - "Target is a system process (svchost, explorer)"
-  context: "Process injection allows code execution in the context of another process. Check what was injected and by whom."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_access"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "TGT with abnormally long lifetime"
     - "RC4 encryption on TGT when AES is policy"
-  context: "Golden Tickets provide unlimited domain access. If detected, assume full domain compromise and begin incident response."
 ---
 source_type=windows_security
 | where action="ticket_grant" AND auth_type="tgt"

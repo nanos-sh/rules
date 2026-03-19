@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "sudo to non-root user account"
     - "sudo running shell or network commands"
-  context: "Unusual sudo patterns may indicate privilege escalation. Check if the user should have sudo access."
 ---
 source_type=linux_audit OR source_type=endpoint_edr
 | where action="process_create"

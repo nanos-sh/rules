@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Target assembly is in temp or user directory"
     - "Using /U (uninstall) parameter for code execution"
-  context: "InstallUtil can execute arbitrary .NET code through installer classes. The /U flag is commonly abused as it doesn't require admin privileges."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

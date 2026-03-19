@@ -22,7 +22,6 @@ ai_triage_hints:
   suspicious_when:
     - "Multiple enumeration commands in sequence"
     - "Performed by non-admin user"
-  context: "Account enumeration reveals who has access. Combined with other recon, it maps potential targets for privilege escalation."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

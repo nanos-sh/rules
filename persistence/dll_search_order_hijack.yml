@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "DLL has low prevalence"
     - "DLL name matches a known hijackable DLL"
-  context: "DLL search order hijacking places a malicious DLL where a legitimate application will load it. Check the DLL hash and signing status."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where file_action="create" AND file_path CONTAINS ".dll"

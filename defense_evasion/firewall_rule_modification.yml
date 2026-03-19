@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Firewall profile disabled entirely"
     - "Allow rule for non-standard ports"
-  context: "Firewall modifications may enable C2 communications or lateral movement. Check what traffic the new rule allows."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

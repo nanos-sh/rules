@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "msdt launched by Office application"
     - "Command contains PCWDiagnostic or IT_BrowseForFile"
-  context: "Follina (CVE-2022-30190) abuses msdt.exe for code execution. If Office spawned msdt, this is very likely exploitation."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

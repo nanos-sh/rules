@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "GPO disables security controls"
     - "Change made outside business hours"
-  context: "GPO modifications can disable security controls domain-wide. Verify the change was authorized."
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="directory_modify"

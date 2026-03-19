@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "NTLM auth when Kerberos is expected"
     - "Admin account using NTLM from workstation"
-  context: "Pass-the-Hash uses stolen NTLM hashes to authenticate. NTLM usage where Kerberos is expected is a key indicator."
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="login" AND auth_type="ntlm" AND status="success"

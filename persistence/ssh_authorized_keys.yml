@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Key added by non-admin user"
     - "Multiple keys added in short period"
-  context: "Unauthorized SSH keys provide persistent backdoor access. Check who added the key and from where."
 ---
 source_type=linux_audit OR source_type=endpoint_edr
 | where file_action="modify" OR file_action="create"

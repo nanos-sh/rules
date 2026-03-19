@@ -25,7 +25,6 @@ ai_triage_hints:
   suspicious_when:
     - "Many list/describe calls from new identity"
     - "Calls span multiple services"
-  context: "Cloud enumeration maps the attack surface. Check if the identity is authorized and if credentials may be compromised."
 ---
 source_type=cloudtrail OR source_type=azure_activity
 | where action=/(List|Describe|Get)/i

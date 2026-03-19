@@ -26,7 +26,6 @@ ai_triage_hints:
     - "Timestamp is set to match system files (blending in)"
     - "File has low prevalence and recent actual creation"
     - "Associated with other suspicious process activity"
-  context: "Timestomping hides when malware was actually dropped. The $STANDARD_INFORMATION timestamps are modified but $FILE_NAME timestamps in MFT remain accurate. Investigate what process created this file and when."
 ---
 source_type=windows_sysmon
 | where action="file_time_change"

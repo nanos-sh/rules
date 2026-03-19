@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Extension installed via command line or script"
     - "Extension files have low prevalence"
-  context: "Malicious browser extensions can steal credentials, inject ads, and maintain persistence. Check the extension ID and permissions."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where file_action="create"

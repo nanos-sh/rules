@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Enumerating shares on many hosts rapidly"
     - "Non-admin user discovering shares"
-  context: "Share enumeration finds file repositories for data collection. Check if sensitive shares were accessed after discovery."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

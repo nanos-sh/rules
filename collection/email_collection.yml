@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "PowerShell accessing Outlook COM objects"
     - "Large PST files being created"
-  context: "Email collection targets sensitive communications. Check if the user has authorization to export mailbox data."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

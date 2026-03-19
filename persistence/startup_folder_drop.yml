@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "File is a script (.vbs, .js, .bat, .ps1)"
     - "File was recently downloaded or created by browser"
-  context: "Files in Startup folders execute at logon. Check the file content and how it arrived there."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where file_action="create"

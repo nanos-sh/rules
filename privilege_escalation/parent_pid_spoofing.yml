@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Child process doesn't match expected parent"
     - "svchost.exe with unusual parent"
-  context: "PPID spoofing is used to evade detections that rely on parent-child relationships. The true parent is hidden."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

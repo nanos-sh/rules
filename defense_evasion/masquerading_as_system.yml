@@ -22,7 +22,6 @@ ai_triage_hints:
   suspicious_when:
     - "System process name running from user directory"
     - "Hash doesn't match known Microsoft binary"
-  context: "Attackers name malware after system processes to blend in. The key indicator is the wrong file path."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

@@ -22,7 +22,6 @@ ai_triage_hints:
   suspicious_when:
     - "Note created alongside file encryption"
     - "Note found in multiple directories"
-  context: "CRITICAL: Ransom note creation means encryption has started. Isolate immediately and begin incident response."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where file_action="create"

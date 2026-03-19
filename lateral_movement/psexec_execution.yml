@@ -26,7 +26,6 @@ ai_triage_hints:
   suspicious_when:
     - "PsExec to sensitive server or DC"
     - "Execution of suspicious commands remotely"
-  context: "PsExec enables remote command execution via SMB. While legitimate, it's heavily used by attackers for lateral movement."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create" OR action="service_create"

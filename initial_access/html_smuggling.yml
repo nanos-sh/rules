@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "HTML file creates executable payload"
     - "Browser drops file to Downloads then user executes"
-  context: "HTML smuggling bypasses email and proxy security by assembling payloads in the browser. Check what file was dropped."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | sequence by src_host maxspan=5m

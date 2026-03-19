@@ -26,7 +26,6 @@ ai_triage_hints:
   suspicious_when:
     - "URL points to external hosting or paste site"
     - "Downloaded file has executable extension"
-  context: "certutil is a signed Microsoft binary commonly abused for downloading payloads. Check the URL and downloaded file content."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

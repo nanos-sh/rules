@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Deleting files with security tool extensions (.evtx, .log)"
     - "Mass deletion followed by other suspicious activity"
-  context: "Mass file deletion can be evidence destruction or ransomware prep. Check what files were deleted and by which process."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where file_action="delete"

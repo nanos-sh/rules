@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Access from workstation to server admin shares"
     - "First-time admin share access for this user"
-  context: "Admin shares provide full filesystem access. Non-IT users accessing C$ or ADMIN$ is suspicious."
 ---
 source_type=windows_security OR source_type=endpoint_edr
 | where action="share_access"

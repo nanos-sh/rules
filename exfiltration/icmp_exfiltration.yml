@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Large ICMP payload sizes"
     - "Continuous ICMP to single destination"
-  context: "ICMP can carry data in the payload. Large or frequent ICMP to external IPs is suspicious."
 ---
 source_type=firewall OR source_type=network_flow
 | where protocol="icmp"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Replication request from workstation"
     - "Non-DC requesting GetNCChanges"
-  context: "DCSync allows extraction of all domain password hashes. This is a critical attack that provides complete domain compromise."
 ---
 source_type=windows_security
 | where action="directory_replication" OR message CONTAINS "GetNCChanges" OR message CONTAINS "DsGetNCChanges"

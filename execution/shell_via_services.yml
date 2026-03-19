@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Shell command includes network activity or file downloads"
     - "Service was recently created or modified"
-  context: "Services.exe spawning shells can indicate a malicious service was installed for persistence or exploitation."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

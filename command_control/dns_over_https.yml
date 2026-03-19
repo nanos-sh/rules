@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Non-browser process using DoH"
     - "DoH to non-standard resolver"
-  context: "DoH encrypts DNS queries, bypassing corporate DNS monitoring. Attackers use it to hide C2 communications."
 ---
 source_type=proxy OR source_type=firewall
 | where url CONTAINS "dns-query" OR url CONTAINS "resolve?" OR dest_host IN ("1.1.1.1", "8.8.8.8", "9.9.9.9", "208.67.222.222")

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Service binary in temp or user-writable path"
     - "Service created by cmd.exe or powershell"
-  context: "Windows services run with SYSTEM privileges. Check the service binary path and who created it."
 ---
 source_type=windows_sysmon OR source_type=windows_security
 | where action="service_create" OR (process_name="sc.exe" AND command_line CONTAINS "create")

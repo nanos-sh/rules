@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Archive created from sensitive directories"
     - "Archive created by scripting engine"
-  context: "Data staging before exfiltration often involves archiving. Check what directories were archived and where the archive was sent."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

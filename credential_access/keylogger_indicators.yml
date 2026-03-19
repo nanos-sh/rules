@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Unknown process setting keyboard hooks"
     - "Process has low prevalence"
-  context: "Keyloggers capture typed credentials and sensitive data. Check the process hash and what data it may have captured."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create" OR action="api_call"

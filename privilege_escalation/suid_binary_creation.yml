@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "SUID set on shell or interpreter"
     - "Binary is in non-standard location"
-  context: "SUID binaries run as the file owner. Creating SUID root binaries is a classic privilege escalation technique."
 ---
 source_type=linux_audit OR source_type=endpoint_edr
 | where action="process_create"

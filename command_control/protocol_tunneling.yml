@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Unknown tunneling tool detected"
     - "Tunneling to external IP"
-  context: "Protocol tunneling hides C2 within legitimate traffic. Check what traffic is being tunneled and to where."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Multiple bypass techniques in single session"
     - "Followed by suspicious script execution"
-  context: "Constrained Language Mode limits PowerShell attack surface. Bypassing it indicates intent to run advanced attack tools."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

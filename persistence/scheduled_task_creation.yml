@@ -27,7 +27,6 @@ ai_triage_hints:
     - "Task name is random or obfuscated"
     - "Parent process is scripting engine or Office app"
     - "Task triggers on system events rather than schedule"
-  context: "Attackers use scheduled tasks for persistence. Check the task action to see what it executes. Review when the executable in the action was created. Consider if the timing correlates with other suspicious activity on the host."
 ---
 source_type=windows_sysmon OR source_type=windows_security
 | where action="scheduled_task_create" OR (process_name="schtasks.exe" AND command_line CONTAINS "/create")

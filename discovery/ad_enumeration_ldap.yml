@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "High volume of LDAP queries from single host"
     - "Queries targeting sensitive groups or attributes"
-  context: "Excessive LDAP enumeration indicates AD reconnaissance. Check if this is an authorized tool or potential attacker."
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="ldap_query" OR action="directory_read"

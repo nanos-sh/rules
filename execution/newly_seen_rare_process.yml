@@ -27,7 +27,6 @@ ai_triage_hints:
     - "Process spawns child processes or makes network connections"
     - "File located in temp or user-writable directory"
     - "Execution shortly after file creation"
-  context: "Newly appeared rare hashes are prime indicators of malware. The combination of low prevalence AND recent first_seen strongly suggests this is not legitimate software. Check VirusTotal for the hash. Review what created this file and what the process did after execution."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

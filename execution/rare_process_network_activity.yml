@@ -29,7 +29,6 @@ ai_triage_hints:
     - "Connection is to a non-standard port"
     - "Destination IP is in a hosting provider range"
     - "Process was recently dropped to disk (check file creation time)"
-  context: "Low prevalence + network activity is a strong signal for malware. Check VirusTotal for the file hash. Investigate how the file arrived on the host."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="network_connect" AND dest_port > 0

@@ -27,7 +27,6 @@ ai_triage_hints:
     - "Dump file is created in temp directory"
     - "Network connection follows within minutes to external IP"
     - "Parent process is cmd.exe, powershell.exe, or scripting engine"
-  context: "LSASS contains cached credentials. Legitimate access is rare outside of security tools. Check if this host is in scope for a pentest or red team exercise before escalating."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | sequence by src_host maxspan=15m

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Many push notifications in rapid succession"
     - "Followed by an approval outside normal hours"
-  context: "MFA fatigue bombards users with push notifications until they accidentally approve. Check if the final approval was legitimate."
 ---
 source_type=okta OR source_type=azure_ad OR source_type=auth_logs
 | where action="mfa_challenge" OR action="mfa_push"

@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Auto-elevating COM object spawns shell"
     - "fodhelper or computerdefaults used for bypass"
-  context: "UAC bypass allows elevation without user consent. This is a key step between initial access and full compromise."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

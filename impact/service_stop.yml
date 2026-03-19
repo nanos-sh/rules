@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Multiple critical services stopped"
     - "No corresponding service start"
-  context: "Ransomware stops services to unlock files for encryption. Stopping backup and DB services is a strong indicator."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

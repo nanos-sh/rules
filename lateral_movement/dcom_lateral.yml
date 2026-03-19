@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "DCOM spawning shell on remote host"
     - "Unusual DCOM application activation"
-  context: "DCOM lateral movement is stealthier than PsExec. Check for associated network connections."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

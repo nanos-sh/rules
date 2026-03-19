@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Many files renamed with new extensions rapidly"
     - "Ransom note files created"
-  context: "CRITICAL: Active ransomware encryption. Isolate the host immediately. Check for backup integrity and notify IR team."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where file_action="rename" OR file_action="modify"

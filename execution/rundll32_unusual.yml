@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "DLL loaded from Temp, Downloads, or AppData"
     - "Export function name is random or obfuscated"
-  context: "rundll32 can load arbitrary DLLs. Attackers use it to execute malicious code while appearing as a legitimate Windows process."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

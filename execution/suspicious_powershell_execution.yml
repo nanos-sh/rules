@@ -29,7 +29,6 @@ ai_triage_hints:
     - "Parent process is Office application or browser"
     - "Command downloads and executes in memory (fileless)"
     - "AMSI bypass detected alongside other suspicious patterns"
-  context: "PowerShell is heavily abused by attackers. Encoded commands hide malicious intent. Check the decoded command content and investigate the parent process chain to understand how PowerShell was invoked."
 ---
 source_type=windows_sysmon OR source_type=windows_security OR source_type=endpoint_edr
 | where action="process_create"

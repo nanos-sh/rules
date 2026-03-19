@@ -25,7 +25,6 @@ ai_triage_hints:
   suspicious_when:
     - "Script executed from Temp or user profile"
     - "Script has obfuscated name or random characters"
-  context: "WSH scripts (VBS/JS) are common initial execution vectors from phishing. Check the script content and what spawned it."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

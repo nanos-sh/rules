@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Original name is cmd.exe, powershell.exe, or other system tool"
     - "File is in a non-standard location"
-  context: "Renamed system binaries evade detection rules that match on process name. The original filename in PE metadata reveals the true identity."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

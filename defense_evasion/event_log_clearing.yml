@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Security or System log cleared"
     - "Cleared by non-admin user"
-  context: "Log clearing destroys evidence. If Security logs were cleared, treat the host as potentially compromised."
 ---
 source_type=windows_security OR source_type=windows_sysmon
 | where action="log_clear" OR (process_name="wevtutil.exe" AND command_line CONTAINS "cl") OR (process_name="powershell.exe" AND command_line CONTAINS "Clear-EventLog")

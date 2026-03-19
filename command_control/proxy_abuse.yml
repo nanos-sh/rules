@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "High frequency to single domain with small payloads"
     - "POST requests with encoded data"
-  context: "C2 over HTTPS looks like normal web traffic. Check the destination domain reputation and traffic patterns."
 ---
 source_type=proxy
 | where action="connect" AND dest_port=443

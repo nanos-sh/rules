@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Shell with network redirection"
     - "Netcat or socat with shell command"
-  context: "Reverse shells provide interactive access to attackers. This is active compromise and requires immediate response."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon OR source_type=linux_audit
 | where action="process_create"

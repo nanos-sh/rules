@@ -29,7 +29,6 @@ ai_triage_hints:
     - "Connection occurs outside business hours"
     - "Large data transfer to the domain"
     - "Domain name looks like DGA (random characters)"
-  context: "Newly seen domains with low prevalence are classic C2 indicators. Attackers frequently rotate domains to evade detection. Check the domain registration date, hosting provider, and SSL certificate. Look for other hosts connecting to this domain or similar domains."
 ---
 source_type=proxy OR source_type=firewall OR source_type=dns
 | where dest_host != "" AND dest_host LIKE "%.%"

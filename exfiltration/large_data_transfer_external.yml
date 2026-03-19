@@ -27,7 +27,6 @@ ai_triage_hints:
     - "Transfer occurs at unusual hours for this user"
     - "Data was recently accessed from sensitive shares"
     - "Multiple large transfers to different destinations"
-  context: "Large outbound transfers may indicate data theft. Check what files the user accessed prior to the transfer. Review DLP logs if available. Consider whether the destination IP has been seen in threat intelligence."
 ---
 source_type=firewall OR source_type=proxy OR source_type=network_flow
 | where bytes_out > 50000000

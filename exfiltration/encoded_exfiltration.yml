@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Base64 data sent to external IP"
     - "Large encoded payload in URL parameter"
-  context: "Base64 encoding can bypass DLP that looks for raw sensitive data. Decode the content to understand what was exfiltrated."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

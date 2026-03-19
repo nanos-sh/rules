@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "HTA loaded from URL or temp directory"
     - "Inline VBScript or JavaScript in command line"
-  context: "mshta.exe is a signed Microsoft binary that can execute arbitrary scripts, making it a popular living-off-the-land technique."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Pipe name matches known exploit tool patterns"
     - "Created by low-privilege process"
-  context: "Named pipe impersonation is used by Potato-family exploits to escalate from service accounts to SYSTEM."
 ---
 source_type=windows_sysmon
 | where action="pipe_create"

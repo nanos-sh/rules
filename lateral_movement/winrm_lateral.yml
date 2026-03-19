@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "WinRM from workstation to server"
     - "Remote session executing suspicious commands"
-  context: "WinRM provides PowerShell remoting. Check the remote commands and whether this user normally uses PS remoting."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

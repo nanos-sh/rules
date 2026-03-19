@@ -22,7 +22,6 @@ ai_triage_hints:
   suspicious_when:
     - "Mining on production server"
     - "High CPU with mining pool connections"
-  context: "Cryptomining steals compute resources and increases costs. Check for unauthorized access that deployed the miner."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

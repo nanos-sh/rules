@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "TLS to external IP on high port"
     - "Connection to low-prevalence IP"
-  context: "TLS on non-standard ports can hide C2. Standard ports (443, 8443) are expected; unusual ports warrant investigation."
 ---
 source_type=firewall OR source_type=network_flow
 | where protocol="tls" OR protocol="ssl"

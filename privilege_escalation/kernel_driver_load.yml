@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Driver has no digital signature"
     - "Driver loaded from temp or user directory"
-  context: "Kernel drivers run with highest privileges. Unsigned or rare drivers may be rootkits or BYOVD attacks."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="driver_load"

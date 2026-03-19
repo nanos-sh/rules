@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Web files modified by non-deployment process"
     - "index.html modified outside deployment window"
-  context: "Web defacement damages brand reputation. Check if the modification was authorized and review the changed content."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where file_action="modify"

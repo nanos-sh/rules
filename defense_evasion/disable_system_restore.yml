@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Shadow copies deleted by non-admin process"
     - "Combined with file encryption activity"
-  context: "Deleting shadow copies prevents recovery from ransomware. This is a very strong indicator of active ransomware."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

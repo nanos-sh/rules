@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Target is a sensitive server or domain controller"
     - "Process created is scripting engine or shell"
-  context: "WMIC process creation on remote hosts is a classic living-off-the-land technique. Check for lateral movement patterns."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

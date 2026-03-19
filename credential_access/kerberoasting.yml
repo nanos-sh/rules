@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Single user requesting many service tickets"
     - "Tickets requested with RC4 encryption"
-  context: "Kerberoasting extracts service account password hashes. Check if the targeted SPNs have weak passwords."
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="ticket_request" AND auth_type="tgs"

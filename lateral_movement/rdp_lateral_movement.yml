@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "RDP from workstation to workstation"
     - "First-time RDP connection for this user-host pair"
-  context: "Workstation-to-workstation RDP is uncommon in most environments and often indicates lateral movement."
 ---
 source_type=firewall OR source_type=network_flow OR source_type=windows_security
 | where dest_port=3389 AND action="network_connect"

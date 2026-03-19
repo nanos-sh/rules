@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Scanning from workstation, not scanner"
     - "Targeting many ports on single host"
-  context: "Port scanning maps available services. From a workstation, this indicates compromise and lateral movement preparation."
 ---
 source_type=firewall OR source_type=network_flow OR source_type=endpoint_edr
 | where action="network_connect"

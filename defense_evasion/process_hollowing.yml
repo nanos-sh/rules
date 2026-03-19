@@ -22,7 +22,6 @@ ai_triage_hints:
   suspicious_when:
     - "Legitimate process loaded from unusual path"
     - "Process image doesn't match on-disk binary"
-  context: "Process hollowing replaces the memory of a legitimate process with malicious code. The process appears normal but runs attacker code."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Query combined with other reconnaissance"
     - "Performed by scripting engine"
-  context: "Attackers discover security tools to tailor evasion. This often precedes attempts to disable or bypass defenses."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

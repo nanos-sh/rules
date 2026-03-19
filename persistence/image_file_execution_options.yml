@@ -25,7 +25,6 @@ ai_triage_hints:
   suspicious_when:
     - "Debugger points to cmd.exe or powershell.exe"
     - "Target is accessibility tool (sethc.exe, utilman.exe)"
-  context: "IFEO debugger keys redirect process execution. Targeting accessibility tools creates a backdoor at the login screen."
 ---
 source_type=windows_sysmon
 | where action="registry_set"

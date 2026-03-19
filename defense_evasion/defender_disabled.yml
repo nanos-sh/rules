@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Defender disabled by script or command line"
     - "Multiple Defender features disabled at once"
-  context: "Disabling Defender is often a precursor to deploying malware. Check what happens after Defender is disabled."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create" OR action="registry_set"

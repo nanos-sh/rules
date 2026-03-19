@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Targeting Domain Admins or Enterprise Admins"
     - "Multiple admin groups enumerated in sequence"
-  context: "Enumerating admin groups identifies high-value targets for credential theft. Common pre-attack reconnaissance."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

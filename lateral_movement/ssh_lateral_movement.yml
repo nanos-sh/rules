@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Multiple SSH hops in short time"
     - "SSH to hosts not typically accessed by this user"
-  context: "SSH chaining through multiple hosts is common in Linux lateral movement. Check if each hop was authorized."
 ---
 source_type=linux_audit OR source_type=auth_logs OR source_type=network_flow
 | where dest_port=22 AND action="network_connect"

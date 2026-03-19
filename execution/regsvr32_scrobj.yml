@@ -25,7 +25,6 @@ ai_triage_hints:
   suspicious_when:
     - "Loading scrobj.dll with /i parameter"
     - "Remote URL in command line"
-  context: "Squiblydoo abuses regsvr32 to proxy execution of malicious scripts. The binary is signed by Microsoft and bypasses AppLocker."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Python runs encoded or obfuscated script"
     - "Python makes network connections after launch"
-  context: "Python on non-developer hosts often indicates attacker tooling. Check what script was executed and who installed Python."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "XSL file is from temp or user-writable directory"
     - "WMIC format parameter points to remote XSL"
-  context: "XSL files can contain JScript/VBScript. This is an uncommon but effective bypass for application whitelisting."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

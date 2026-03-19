@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Tool used with image files and data together"
     - "Followed by file upload or email"
-  context: "Steganography hides data within innocent-looking files. Check what data was hidden and where the carrier file was sent."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

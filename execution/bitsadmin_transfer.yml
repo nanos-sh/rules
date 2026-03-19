@@ -26,7 +26,6 @@ ai_triage_hints:
   suspicious_when:
     - "Transfer involves external URLs"
     - "Downloaded file is executable"
-  context: "BITSAdmin creates persistent download jobs that survive reboots. Check the URL and destination path."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

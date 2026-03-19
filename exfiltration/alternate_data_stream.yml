@@ -25,7 +25,6 @@ ai_triage_hints:
   suspicious_when:
     - "Large data hidden in ADS"
     - "ADS created by scripting engine"
-  context: "ADS can hide data within files without changing their visible size. Data hidden this way can bypass casual inspection."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

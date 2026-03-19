@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Very long subdomain labels (>30 chars)"
     - "High volume of unique subdomains for one domain"
-  context: "DNS tunneling encodes data in DNS queries. High entropy subdomains or excessive queries to one domain are key indicators."
 ---
 source_type=dns OR source_type=firewall
 | where dest_port=53

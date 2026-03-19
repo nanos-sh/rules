@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Access to systems outside normal scope"
     - "Off-hours access from partner network"
-  context: "Trusted relationships can be exploited when partner credentials are compromised. Verify with the partner."
 ---
 source_type=vpn_logs OR source_type=firewall OR source_type=auth_logs
 | where action="login" AND status="success"

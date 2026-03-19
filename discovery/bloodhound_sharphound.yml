@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "SharpHound creating JSON output files"
     - "LDAP queries matching BloodHound patterns"
-  context: "BloodHound maps AD attack paths. Its use by unauthorized parties indicates active reconnaissance for privilege escalation."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

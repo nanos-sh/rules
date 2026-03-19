@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Unknown process accessing microphone"
     - "Audio capture by scripting engine"
-  context: "Audio capture enables eavesdropping on conversations. Verify the capturing process is legitimate."
 ---
 source_type=endpoint_edr
 | where action="device_access" OR action="api_call"

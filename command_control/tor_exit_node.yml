@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Tor from production server"
     - "Combined with other suspicious activity"
-  context: "Tor provides anonymity for C2 communications. Corporate Tor usage is almost always unauthorized."
 ---
 source_type=proxy OR source_type=firewall
 | where dest_port=9001 OR dest_port=9030 OR url CONTAINS ".onion" OR dest_host CONTAINS "torproject.org"

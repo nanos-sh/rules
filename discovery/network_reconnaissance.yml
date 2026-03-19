@@ -30,7 +30,6 @@ ai_triage_hints:
     - "Commands executed in rapid succession (scripted)"
     - "Occurs shortly after a login from unusual location"
     - "Host is a workstation, not admin jump box"
-  context: "Network reconnaissance is typically an early post-compromise activity. Check how the user session was established. Look for other suspicious activity on this host before and after the recon commands."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

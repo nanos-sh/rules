@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Cron command includes network activity (curl, wget)"
     - "Cron command runs encoded or obfuscated script"
-  context: "Cron jobs provide reliable persistence on Linux. Check the command being scheduled and who created it."
 ---
 source_type=linux_audit OR source_type=endpoint_edr
 | where action="process_create"

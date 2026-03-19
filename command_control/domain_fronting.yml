@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "SNI is major CDN but Host is unknown domain"
     - "Traffic to fronted domain has C2 patterns"
-  context: "Domain fronting hides C2 behind CDN domains. The true destination is in the Host header, not the SNI."
 ---
 source_type=proxy OR source_type=firewall
 | where dest_host CONTAINS "cloudfront.net" OR dest_host CONTAINS "azureedge.net" OR dest_host CONTAINS "googleapis.com"

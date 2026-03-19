@@ -31,7 +31,6 @@ ai_triage_hints:
     - "Link domain was recently registered"
     - "Downloaded file has low prevalence"
     - "Execution occurred within minutes of download"
-  context: "This is a complete phishing attack chain. Immediately isolate the endpoint if the executed file is suspicious. Check if other users received the same email. Block the sender domain and link URL across the organization."
 ---
 source_type=email_gateway OR source_type=endpoint_edr OR source_type=proxy
 | sequence by user, src_host maxspan=30m

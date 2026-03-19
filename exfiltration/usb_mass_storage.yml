@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "USB device connected to sensitive system"
     - "Large file copies after USB connection"
-  context: "USB devices can exfiltrate large amounts of data quickly. Check what files were accessed and copied."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="device_connect" OR action="usb_connect"

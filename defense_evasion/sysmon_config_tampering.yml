@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Sysmon being uninstalled without replacement"
     - "Configuration change removes important event types"
-  context: "Sysmon tampering is a strong indicator of active attacker trying to blind defenses. Investigate immediately."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

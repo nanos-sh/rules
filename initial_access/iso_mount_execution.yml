@@ -25,7 +25,6 @@ ai_triage_hints:
   suspicious_when:
     - "ISO from email or download"
     - "LNK or script inside mounted ISO"
-  context: "ISO files bypass Mark-of-the-Web, allowing contained files to execute without SmartScreen warnings."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

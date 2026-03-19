@@ -29,7 +29,6 @@ ai_triage_hints:
     - "Movement occurs outside business hours"
     - "Authentication uses pass-the-hash or Kerberos anomalies"
     - "Time between hops is very short (automated tool)"
-  context: "Lateral movement often follows a compromised workstation. Check the initial workstation for signs of compromise. Review what files were accessed on each hop. Domain controller access is especially critical to investigate."
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="login" AND status="success"

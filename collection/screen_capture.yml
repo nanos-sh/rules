@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Unknown process taking screenshots"
     - "Repeated screenshot activity"
-  context: "Screen capture can expose sensitive information displayed on screen. Check the capturing process."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

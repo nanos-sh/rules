@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "SAM and SYSTEM hives saved together"
     - "Exported to user-writable directory"
-  context: "SAM + SYSTEM hives allow offline password cracking. Both are needed together to decrypt the hashes."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

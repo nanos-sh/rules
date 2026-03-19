@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Large attachment to personal email domain"
     - "Encrypted or password-protected attachment"
-  context: "Email exfiltration is common due to its ease of use. Check the attachment content and recipient domain."
 ---
 source_type=email_gateway OR source_type=proxy
 | where action="email_sent" AND bytes_out > 5000000

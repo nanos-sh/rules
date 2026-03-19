@@ -22,7 +22,6 @@ ai_triage_hints:
   suspicious_when:
     - "Disabling security-related ETW providers"
     - "Patching ntdll to bypass ETW"
-  context: "ETW provides telemetry to security tools. Disabling it blinds defensive capabilities."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"

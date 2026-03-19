@@ -24,7 +24,6 @@ ai_triage_hints:
   suspicious_when:
     - "Job runs shell commands with network activity"
     - "Created by non-admin user"
-  context: "at jobs provide one-time scheduled execution. While less persistent than cron, they can delay malicious execution."
 ---
 source_type=linux_audit OR source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Wiper tool on production system"
     - "Disk wipe without change management"
-  context: "CRITICAL: Disk wipers destroy data permanently. Isolate the host and check for spreading to other systems."
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"

@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Default Cobalt Strike named pipe patterns"
     - "Known CS beacon sleep patterns"
-  context: "Cobalt Strike is the most common adversary C2 framework. Detection indicates active hands-on-keyboard intrusion."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="pipe_create" OR action="process_create"

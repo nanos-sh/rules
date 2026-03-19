@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Script modified by non-admin account"
     - "Script contains download or execution commands"
-  context: "Logon scripts run at every user login. Compromised logon scripts affect all users in scope."
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="directory_modify" OR action="registry_set"

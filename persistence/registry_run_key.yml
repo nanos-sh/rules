@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Value points to executable in temp or user directory"
     - "Registry change made by scripting engine"
-  context: "Run keys execute programs at user logon. Check what executable is being persisted and how it arrived on disk."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="registry_set"

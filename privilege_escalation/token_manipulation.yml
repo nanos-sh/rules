@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Non-admin process manipulating tokens"
     - "Token from SYSTEM or Domain Admin"
-  context: "Token manipulation allows running code under another user's security context. Check what process is stealing tokens and why."
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create" OR action="process_access"

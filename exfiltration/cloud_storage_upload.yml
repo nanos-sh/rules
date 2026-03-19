@@ -23,7 +23,6 @@ ai_triage_hints:
   suspicious_when:
     - "Upload to personal cloud storage"
     - "Large upload outside business hours"
-  context: "Cloud storage is a common exfiltration channel. Check if the destination is corporate or personal."
 ---
 source_type=proxy OR source_type=firewall
 | where bytes_out > 10000000
