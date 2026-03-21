@@ -26,8 +26,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where (process_name="net.exe" AND command_line CONTAINS "view") OR (process_name="net.exe" AND command_line CONTAINS "share") OR command_line CONTAINS "Get-SmbShare"
+| where (process_name="net.exe" AND process CONTAINS "view") OR (process_name="net.exe" AND process CONTAINS "share") OR process CONTAINS "Get-SmbShare"
 | risk score=40 entity=src_host factor="Share enumeration"
-| where command_line CONTAINS "\\*" OR command_line CONTAINS "/domain"
+| where process CONTAINS "\\*" OR process CONTAINS "/domain"
 | risk score=65 factor="Domain-wide share enumeration"
-| table timestamp, src_host, user, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process, risk_score, risk_factors

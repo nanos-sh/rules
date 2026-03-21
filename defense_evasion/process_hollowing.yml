@@ -28,4 +28,4 @@ source_type=windows_sysmon OR source_type=endpoint_edr
 | where process_name IN ("svchost.exe", "explorer.exe", "RuntimeBroker.exe", "dllhost.exe")
 | where process_path NOT CONTAINS "\Windows\"
 | risk score=90 entity=src_host factor="Process hollowing indicator"
-| table timestamp, src_host, process_name, process_path, parent_process, command_line, risk_score, risk_factors
+| table timestamp, src_host, process_name, process_path, parent_process, process, risk_score, risk_factors

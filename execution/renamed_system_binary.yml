@@ -32,4 +32,4 @@ source_type=windows_sysmon OR source_type=endpoint_edr
 | risk score=75 entity=src_host factor="Renamed system binary"
 | where process_path NOT CONTAINS "System32" AND process_path NOT CONTAINS "SysWOW64"
 | risk score=85 factor="Non-standard path"
-| table timestamp, src_host, user, process_name, original_file_name, process_path, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, original_file_name, process_path, process, risk_score, risk_factors

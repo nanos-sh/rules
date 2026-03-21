@@ -27,6 +27,6 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where (process_name="vssadmin.exe" AND command_line CONTAINS "delete shadows") OR (process_name="wmic.exe" AND command_line CONTAINS "shadowcopy" AND command_line CONTAINS "delete") OR (command_line CONTAINS "bcdedit" AND command_line CONTAINS "recoveryenabled" AND command_line CONTAINS "no")
+| where (process_name="vssadmin.exe" AND process CONTAINS "delete shadows") OR (process_name="wmic.exe" AND process CONTAINS "shadowcopy" AND process CONTAINS "delete") OR (process CONTAINS "bcdedit" AND process CONTAINS "recoveryenabled" AND process CONTAINS "no")
 | risk score=90 entity=src_host factor="Recovery options disabled"
-| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, process, risk_score, risk_factors

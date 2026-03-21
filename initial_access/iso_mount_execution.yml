@@ -33,4 +33,4 @@ source_type=endpoint_edr OR source_type=windows_sysmon
 | risk score=65 entity=src_host factor="Execution from mounted image"
 | where parent_process="explorer.exe"
 | risk score=80 factor="User-initiated ISO execution"
-| table timestamp, src_host, user, process_name, process_path, parent_process, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, process_path, parent_process, process, risk_score, risk_factors

@@ -28,10 +28,10 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="mshta.exe"
-| where command_line CONTAINS "http" OR command_line CONTAINS "javascript:" OR command_line CONTAINS "vbscript:" OR command_line CONTAINS "Temp"
+| where process CONTAINS "http" OR process CONTAINS "javascript:" OR process CONTAINS "vbscript:" OR process CONTAINS "Temp"
 | risk score=70 entity=src_host factor="Suspicious mshta execution"
-| where command_line CONTAINS "http://" OR command_line CONTAINS "https://"
+| where process CONTAINS "http://" OR process CONTAINS "https://"
 | risk score=85 factor="Remote HTA execution"
 | where parent_process IN ("winword.exe", "excel.exe", "outlook.exe")
 | risk score=95 factor="Office parent process"
-| table timestamp, src_host, user, parent_process, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, parent_process, process, risk_score, risk_factors

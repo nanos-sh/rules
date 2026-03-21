@@ -29,8 +29,8 @@ source_type=linux_audit OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="crontab" OR file_path CONTAINS "/cron.d/" OR file_path CONTAINS "/crontab"
 | risk score=45 entity=src_host factor="Cron job modified"
-| where command_line CONTAINS "curl" OR command_line CONTAINS "wget" OR command_line CONTAINS "nc " OR command_line CONTAINS "python"
+| where process CONTAINS "curl" OR process CONTAINS "wget" OR process CONTAINS "nc " OR process CONTAINS "python"
 | risk score=75 factor="Network command in cron"
-| where command_line CONTAINS "base64" OR command_line CONTAINS "|sh" OR command_line CONTAINS "|bash"
+| where process CONTAINS "base64" OR process CONTAINS "|sh" OR process CONTAINS "|bash"
 | risk score=85 factor="Encoded or piped execution"
-| table timestamp, src_host, user, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process, risk_score, risk_factors

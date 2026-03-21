@@ -28,8 +28,8 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="rundll32.exe"
-| where command_line CONTAINS "Temp" OR command_line CONTAINS "AppData" OR command_line CONTAINS "Downloads" OR command_line CONTAINS "ProgramData"
+| where process CONTAINS "Temp" OR process CONTAINS "AppData" OR process CONTAINS "Downloads" OR process CONTAINS "ProgramData"
 | risk score=60 entity=src_host factor="Rundll32 unusual path"
-| where command_line CONTAINS "javascript" OR command_line CONTAINS "vbscript"
+| where process CONTAINS "javascript" OR process CONTAINS "vbscript"
 | risk score=90 factor="Script protocol handler"
-| table timestamp, src_host, user, parent_process, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, parent_process, process, risk_score, risk_factors

@@ -38,4 +38,4 @@ source_type=windows_sysmon OR source_type=endpoint_edr
 | risk score=90 factor="Very rare hash"
 | where process_path CONTAINS "Temp" OR process_path CONTAINS "AppData\\Local"
 | risk score=95 factor="Suspicious execution path"
-| table timestamp, src_host, user, process_name, process_path, process_hash, host_count, prevalence_first_seen, is_rare, parent_process, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, process_path, process_hash, host_count, prevalence_first_seen, is_rare, parent_process, process, risk_score, risk_factors

@@ -30,9 +30,9 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="bitsadmin.exe"
-| where command_line CONTAINS "/transfer" OR command_line CONTAINS "/create"
-| where command_line CONTAINS "http"
+| where process CONTAINS "/transfer" OR process CONTAINS "/create"
+| where process CONTAINS "http"
 | risk score=65 entity=src_host factor="BITSAdmin file transfer"
-| where command_line CONTAINS ".exe" OR command_line CONTAINS ".dll"
+| where process CONTAINS ".exe" OR process CONTAINS ".dll"
 | risk score=80 factor="Executable transfer"
-| table timestamp, src_host, user, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process, risk_score, risk_factors

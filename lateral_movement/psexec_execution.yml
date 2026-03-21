@@ -29,8 +29,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create" OR action="service_create"
-| where process_name="psexec.exe" OR process_name="psexesvc.exe" OR command_line CONTAINS "PSEXESVC" OR command_line CONTAINS "\\*\admin$"
+| where process_name="psexec.exe" OR process_name="psexesvc.exe" OR process CONTAINS "PSEXESVC" OR process CONTAINS "\\*\admin$"
 | risk score=65 entity=src_host factor="PsExec activity"
-| where command_line CONTAINS "powershell" OR command_line CONTAINS "cmd /c"
+| where process CONTAINS "powershell" OR process CONTAINS "cmd /c"
 | risk score=80 factor="Remote shell via PsExec"
-| table timestamp, src_host, user, dest_host, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, dest_host, process, risk_score, risk_factors

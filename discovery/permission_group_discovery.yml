@@ -26,9 +26,9 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where process_name IN ("net.exe", "net1.exe") AND command_line CONTAINS "group"
-| where command_line CONTAINS "domain admins" OR command_line CONTAINS "enterprise admins" OR command_line CONTAINS "schema admins" OR command_line CONTAINS "administrators"
+| where process_name IN ("net.exe", "net1.exe") AND process CONTAINS "group"
+| where process CONTAINS "domain admins" OR process CONTAINS "enterprise admins" OR process CONTAINS "schema admins" OR process CONTAINS "administrators"
 | risk score=55 entity=src_host factor="Admin group enumeration"
-| where command_line CONTAINS "/domain"
+| where process CONTAINS "/domain"
 | risk score=70 factor="Domain admin group query"
-| table timestamp, src_host, user, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process, risk_score, risk_factors

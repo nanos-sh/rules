@@ -25,8 +25,8 @@ ai_triage_hints:
     - "Cleared by non-admin user"
 ---
 source_type=windows_security OR source_type=windows_sysmon
-| where action="log_clear" OR (process_name="wevtutil.exe" AND command_line CONTAINS "cl") OR (process_name="powershell.exe" AND command_line CONTAINS "Clear-EventLog")
+| where action="log_clear" OR (process_name="wevtutil.exe" AND process CONTAINS "cl") OR (process_name="powershell.exe" AND process CONTAINS "Clear-EventLog")
 | risk score=85 entity=src_host factor="Event log cleared"
-| where command_line CONTAINS "Security" OR command_line CONTAINS "System"
+| where process CONTAINS "Security" OR process CONTAINS "System"
 | risk score=95 factor="Security log cleared"
-| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, process, risk_score, risk_factors

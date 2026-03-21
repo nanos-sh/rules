@@ -26,7 +26,7 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create" OR action="api_call"
-| where command_line CONTAINS "GetClipboardData" OR command_line CONTAINS "Get-Clipboard" OR command_line CONTAINS "clip.exe"
+| where process CONTAINS "GetClipboardData" OR process CONTAINS "Get-Clipboard" OR process CONTAINS "clip.exe"
 | prevalence enrich=true window=30d
 | where host_count < 10
 | risk score=50 entity=src_host factor="Clipboard access"

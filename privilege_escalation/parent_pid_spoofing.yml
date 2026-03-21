@@ -28,4 +28,4 @@ source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="svchost.exe" AND parent_process NOT IN ("services.exe", "MsMpEng.exe")
 | risk score=80 entity=src_host factor="svchost unusual parent"
-| table timestamp, src_host, user, process_name, parent_process, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, parent_process, process, risk_score, risk_factors

@@ -32,4 +32,4 @@ source_type=linux_audit OR source_type=endpoint_edr
 | prevalence enrich=true window=30d
 | where host_count < 5
 | risk score=80 factor="Rare systemd service"
-| table timestamp, src_host, user, file_path, process_name, command_line, host_count, risk_score, risk_factors
+| table timestamp, src_host, user, file_path, process_name, process, host_count, risk_score, risk_factors

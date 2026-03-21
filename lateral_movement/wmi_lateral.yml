@@ -29,6 +29,6 @@ source_type=windows_sysmon OR source_type=endpoint_edr
 | where parent_process="wmiprvse.exe"
 | where process_name IN ("cmd.exe", "powershell.exe", "pwsh.exe", "mshta.exe", "rundll32.exe")
 | risk score=70 entity=src_host factor="WMI remote execution"
-| where command_line CONTAINS "-enc" OR command_line CONTAINS "IEX" OR command_line CONTAINS "downloadstring"
+| where process CONTAINS "-enc" OR process CONTAINS "IEX" OR process CONTAINS "downloadstring"
 | risk score=90 factor="Suspicious WMI payload"
-| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, process, risk_score, risk_factors

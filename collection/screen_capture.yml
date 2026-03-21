@@ -26,7 +26,7 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"
-| where command_line CONTAINS "screenshot" OR command_line CONTAINS "CopyFromScreen" OR command_line CONTAINS "BitBlt" OR command_line CONTAINS "[System.Windows.Forms.Screen]"
+| where process CONTAINS "screenshot" OR process CONTAINS "CopyFromScreen" OR process CONTAINS "BitBlt" OR process CONTAINS "[System.Windows.Forms.Screen]"
 | prevalence enrich=true window=30d
 | where host_count < 10
 | risk score=50 entity=src_host factor="Screen capture activity"

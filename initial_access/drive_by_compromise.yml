@@ -30,6 +30,6 @@ source_type=endpoint_edr OR source_type=windows_sysmon
 | where parent_process IN ("chrome.exe", "firefox.exe", "msedge.exe", "iexplore.exe", "brave.exe")
 | where process_name IN ("cmd.exe", "powershell.exe", "wscript.exe", "cscript.exe", "rundll32.exe", "regsvr32.exe", "mshta.exe")
 | risk score=85 entity=src_host factor="Browser spawned shell"
-| where process_name="powershell.exe" AND command_line CONTAINS "-enc"
+| where process_name="powershell.exe" AND process CONTAINS "-enc"
 | risk score=95 factor="Browser spawned encoded PowerShell"
-| table timestamp, src_host, user, parent_process, process_name, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, parent_process, process_name, process, risk_score, risk_factors

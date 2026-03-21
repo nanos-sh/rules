@@ -26,8 +26,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create" OR action="registry_set"
-| where command_line CONTAINS "Set-MpPreference" AND (command_line CONTAINS "DisableRealtimeMonitoring" OR command_line CONTAINS "DisableBehaviorMonitoring" OR command_line CONTAINS "DisableIOAVProtection")
+| where process CONTAINS "Set-MpPreference" AND (process CONTAINS "DisableRealtimeMonitoring" OR process CONTAINS "DisableBehaviorMonitoring" OR process CONTAINS "DisableIOAVProtection")
 | risk score=85 entity=src_host factor="Defender protection disabled"
-| where command_line CONTAINS "DisableRealtimeMonitoring $true" OR command_line CONTAINS "DisableRealtimeMonitoring 1"
+| where process CONTAINS "DisableRealtimeMonitoring $true" OR process CONTAINS "DisableRealtimeMonitoring 1"
 | risk score=90 factor="Real-time protection disabled"
-| table timestamp, src_host, user, command_line, risk_score, risk_factors
+| table timestamp, src_host, user, process, risk_score, risk_factors
