@@ -29,6 +29,6 @@ source_type=linux_audit OR source_type=endpoint_edr OR source_type=windows_sysmo
 | where action="process_create"
 | where process_name="at" OR process_name="at.exe"
 | risk score=35 entity=src_host factor="at job created"
-| where process CONTAINS "curl" OR process CONTAINS "wget" OR process CONTAINS "powershell"
+| where command_line CONTAINS "curl" OR command_line CONTAINS "wget" OR command_line CONTAINS "powershell"
 | risk score=65 factor="Suspicious at job command"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

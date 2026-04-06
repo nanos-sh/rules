@@ -27,10 +27,10 @@ ai_triage_hints:
 source_type=linux_audit OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="sudo"
-| where process CONTAINS "bash" OR process CONTAINS "sh -c" OR process CONTAINS "python" OR process CONTAINS "perl"
+| where command_line CONTAINS "bash" OR command_line CONTAINS "sh -c" OR command_line CONTAINS "python" OR command_line CONTAINS "perl"
 | risk score=45 entity=src_host factor="Sudo shell execution"
-| where process CONTAINS "-u" AND process NOT CONTAINS "-u root"
+| where command_line CONTAINS "-u" AND command_line NOT CONTAINS "-u root"
 | risk score=70 factor="Sudo to non-root user"
-| where process CONTAINS "chmod" AND process CONTAINS "+s"
+| where command_line CONTAINS "chmod" AND command_line CONTAINS "+s"
 | risk score=90 factor="SUID bit modification via sudo"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

@@ -26,8 +26,8 @@ ai_triage_hints:
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="directory_modify" OR action="registry_set"
-| where process CONTAINS "ScriptPath" OR registry_key CONTAINS "\UserInitMprLogonScript" OR file_path CONTAINS "\NETLOGON\"
+| where command_line CONTAINS "ScriptPath" OR registry_key_name CONTAINS "\UserInitMprLogonScript" OR file_path CONTAINS "\NETLOGON\"
 | risk score=70 entity=src_host factor="Logon script modified"
-| where process CONTAINS "powershell" OR process CONTAINS ".ps1" OR process CONTAINS "http"
+| where command_line CONTAINS "powershell" OR command_line CONTAINS ".ps1" OR command_line CONTAINS "http"
 | risk score=90 factor="Suspicious script content"
-| table timestamp, src_host, user, process, file_path, registry_key, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, file_path, registry_key_name, risk_score, risk_factors

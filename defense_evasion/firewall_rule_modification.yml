@@ -26,11 +26,11 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where process_name="netsh.exe" AND process CONTAINS "firewall"
-| where process CONTAINS "add" OR process CONTAINS "set" OR process CONTAINS "disable"
+| where process_name="netsh.exe" AND command_line CONTAINS "firewall"
+| where command_line CONTAINS "add" OR command_line CONTAINS "set" OR command_line CONTAINS "disable"
 | risk score=50 entity=src_host factor="Firewall rule modified"
-| where process CONTAINS "disable" AND process CONTAINS "profile"
+| where command_line CONTAINS "disable" AND command_line CONTAINS "profile"
 | risk score=80 factor="Firewall profile disabled"
-| where process CONTAINS "allow" AND process CONTAINS "any"
+| where command_line CONTAINS "allow" AND command_line CONTAINS "any"
 | risk score=75 factor="Broad allow rule added"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

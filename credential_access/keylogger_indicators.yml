@@ -27,7 +27,7 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create" OR action="api_call"
-| where process CONTAINS "SetWindowsHookEx" OR process CONTAINS "GetAsyncKeyState" OR process CONTAINS "GetKeyState"
+| where command_line CONTAINS "SetWindowsHookEx" OR command_line CONTAINS "GetAsyncKeyState" OR command_line CONTAINS "GetKeyState"
 | prevalence enrich=true window=30d
 | where host_count < 10
 | risk score=70 entity=src_host factor="Potential keylogger"

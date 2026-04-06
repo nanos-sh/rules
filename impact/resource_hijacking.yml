@@ -25,8 +25,8 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"
-| where process CONTAINS "stratum" OR process CONTAINS "xmrig" OR process CONTAINS "minerd" OR process CONTAINS "cpuminer" OR process CONTAINS "cryptonight" OR process CONTAINS "pool.minergate"
+| where command_line CONTAINS "stratum" OR command_line CONTAINS "xmrig" OR command_line CONTAINS "minerd" OR command_line CONTAINS "cpuminer" OR command_line CONTAINS "cryptonight" OR command_line CONTAINS "pool.minergate"
 | risk score=70 entity=src_host factor="Cryptomining detected"
 | where src_host CONTAINS "srv" OR src_host CONTAINS "server" OR src_host CONTAINS "prod"
 | risk score=85 factor="Mining on server"
-| table timestamp, src_host, user, process_name, process, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

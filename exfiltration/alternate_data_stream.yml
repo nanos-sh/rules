@@ -28,9 +28,9 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where process CONTAINS ":" AND process CONTAINS ">" AND process_name IN ("cmd.exe", "powershell.exe")
-| where process=~/[a-zA-Z]:\.*:.*>/
+| where command_line CONTAINS ":" AND command_line CONTAINS ">" AND process_name IN ("cmd.exe", "powershell.exe")
+| where command_line=~/[a-zA-Z]:\.*:.*>/
 | risk score=55 entity=src_host factor="ADS creation detected"
-| where process CONTAINS "type" OR process CONTAINS "echo"
+| where command_line CONTAINS "type" OR command_line CONTAINS "echo"
 | risk score=70 factor="Data hidden in ADS"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

@@ -26,8 +26,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where process_name="attrib.exe" AND process CONTAINS "+h"
+| where process_name="attrib.exe" AND command_line CONTAINS "+h"
 | risk score=40 entity=src_host factor="Hidden file/directory created"
-| where process CONTAINS ".exe" OR process CONTAINS ".dll" OR process CONTAINS ".ps1"
+| where command_line CONTAINS ".exe" OR command_line CONTAINS ".dll" OR command_line CONTAINS ".ps1"
 | risk score=70 factor="Hidden executable"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

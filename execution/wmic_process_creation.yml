@@ -27,8 +27,8 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="wmic.exe"
-| where process CONTAINS "/node:" AND process CONTAINS "process" AND process CONTAINS "call" AND process CONTAINS "create"
+| where command_line CONTAINS "/node:" AND command_line CONTAINS "command_line" AND command_line CONTAINS "call" AND command_line CONTAINS "create"
 | risk score=75 entity=src_host factor="Remote WMIC process creation"
-| where process CONTAINS "powershell" OR process CONTAINS "cmd.exe"
+| where command_line CONTAINS "powershell" OR command_line CONTAINS "cmd.exe"
 | risk score=90 factor="Shell spawned via WMIC"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

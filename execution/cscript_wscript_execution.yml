@@ -29,10 +29,10 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name IN ("cscript.exe", "wscript.exe")
-| where process CONTAINS "Temp" OR process CONTAINS "AppData" OR process CONTAINS "Downloads"
+| where command_line CONTAINS "Temp" OR command_line CONTAINS "AppData" OR command_line CONTAINS "Downloads"
 | risk score=55 entity=src_host factor="Script from suspicious path"
-| where parent_process IN ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe")
+| where parent_process_name IN ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe")
 | risk score=85 factor="Office parent process"
-| where process CONTAINS "//E:jscript" OR process CONTAINS "//E:vbscript"
+| where command_line CONTAINS "//E:jscript" OR command_line CONTAINS "//E:vbscript"
 | risk score=70 factor="Explicit script engine"
-| table timestamp, src_host, user, process_name, parent_process, process, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, parent_process_name, command_line, risk_score, risk_factors

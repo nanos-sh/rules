@@ -25,8 +25,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where process CONTAINS "logman" AND (process CONTAINS "stop" OR process CONTAINS "delete") AND process CONTAINS "trace"
+| where command_line CONTAINS "logman" AND (command_line CONTAINS "stop" OR command_line CONTAINS "delete") AND command_line CONTAINS "trace"
 | risk score=80 entity=src_host factor="ETW provider tampering"
-| where process CONTAINS "Microsoft-Windows-Threat-Intelligence"
+| where command_line CONTAINS "Microsoft-Windows-Threat-Intelligence"
 | risk score=95 factor="Threat Intelligence ETW disabled"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

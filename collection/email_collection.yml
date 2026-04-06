@@ -27,8 +27,8 @@ ai_triage_hints:
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"
 | where process_name="powershell.exe" OR process_name="pwsh.exe"
-| where process CONTAINS "Outlook.Application" OR process CONTAINS "New-PST" OR process CONTAINS "Export-Mailbox" OR process CONTAINS ".ost" OR process CONTAINS ".pst"
+| where command_line CONTAINS "Outlook.Application" OR command_line CONTAINS "New-PST" OR command_line CONTAINS "Export-Mailbox" OR command_line CONTAINS ".ost" OR command_line CONTAINS ".pst"
 | risk score=75 entity=src_host factor="Email collection detected"
-| where process CONTAINS "GetFolder" OR process CONTAINS "Items"
+| where command_line CONTAINS "GetFolder" OR command_line CONTAINS "Items"
 | risk score=85 factor="Mailbox enumeration"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

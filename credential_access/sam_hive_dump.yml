@@ -27,8 +27,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
-| where (process_name="reg.exe" AND process CONTAINS "save" AND (process CONTAINS "sam" OR process CONTAINS "system" OR process CONTAINS "security"))
+| where (process_name="reg.exe" AND command_line CONTAINS "save" AND (command_line CONTAINS "sam" OR command_line CONTAINS "system" OR command_line CONTAINS "security"))
 | risk score=80 entity=src_host factor="Registry hive dump"
-| where process CONTAINS "sam" AND process CONTAINS "system"
+| where command_line CONTAINS "sam" AND command_line CONTAINS "system"
 | risk score=95 factor="SAM+SYSTEM dump"
-| table timestamp, src_host, user, process, risk_score, risk_factors
+| table timestamp, src_host, user, command_line, risk_score, risk_factors

@@ -28,8 +28,8 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon
 | where action="registry_set"
-| where registry_key CONTAINS "Image File Execution Options" AND registry_key CONTAINS "Debugger"
+| where registry_key_name CONTAINS "Image File Execution Options" AND registry_key_name CONTAINS "Debugger"
 | risk score=75 entity=src_host factor="IFEO debugger set"
-| where registry_key CONTAINS "sethc.exe" OR registry_key CONTAINS "utilman.exe" OR registry_key CONTAINS "osk.exe" OR registry_key CONTAINS "narrator.exe"
+| where registry_key_name CONTAINS "sethc.exe" OR registry_key_name CONTAINS "utilman.exe" OR registry_key_name CONTAINS "osk.exe" OR registry_key_name CONTAINS "narrator.exe"
 | risk score=95 factor="Accessibility tool hijack"
-| table timestamp, src_host, user, registry_key, registry_value, process_name, risk_score, risk_factors
+| table timestamp, src_host, user, registry_key_name, registry_value_data, process_name, risk_score, risk_factors

@@ -28,8 +28,8 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name="msdt.exe"
-| where process CONTAINS "PCWDiagnostic" OR process CONTAINS "IT_BrowseForFile" OR process CONTAINS "ms-msdt:"
+| where command_line CONTAINS "PCWDiagnostic" OR command_line CONTAINS "IT_BrowseForFile" OR command_line CONTAINS "ms-msdt:"
 | risk score=90 entity=src_host factor="MSDT abuse (Follina-like)"
-| where parent_process IN ("winword.exe", "excel.exe", "outlook.exe")
+| where parent_process_name IN ("winword.exe", "excel.exe", "outlook.exe")
 | risk score=95 factor="Office parent - likely exploitation"
-| table timestamp, src_host, user, parent_process, process, risk_score, risk_factors
+| table timestamp, src_host, user, parent_process_name, command_line, risk_score, risk_factors

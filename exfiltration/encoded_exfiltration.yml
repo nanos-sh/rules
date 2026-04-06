@@ -26,9 +26,9 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"
-| where (process_name="curl.exe" OR process_name="wget.exe" OR process_name="Invoke-WebRequest") AND process CONTAINS "base64"
-| where process CONTAINS "http"
+| where (process_name="curl.exe" OR process_name="wget.exe" OR process_name="Invoke-WebRequest") AND command_line CONTAINS "base64"
+| where command_line CONTAINS "http"
 | risk score=60 entity=src_host factor="Encoded data transfer"
-| where process CONTAINS "POST"
+| where command_line CONTAINS "POST"
 | risk score=75 factor="Encoded POST to external"
-| table timestamp, src_host, user, process_name, process, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

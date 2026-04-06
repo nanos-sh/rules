@@ -26,8 +26,8 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where action="process_create"
-| where process CONTAINS "steghide" OR process CONTAINS "openstego" OR process CONTAINS "snow.exe" OR process CONTAINS "invisible secrets" OR process CONTAINS "Invoke-PSImage"
+| where command_line CONTAINS "steghide" OR command_line CONTAINS "openstego" OR command_line CONTAINS "snow.exe" OR command_line CONTAINS "invisible secrets" OR command_line CONTAINS "Invoke-PSImage"
 | risk score=70 entity=src_host factor="Steganography tool detected"
-| where process CONTAINS "embed"
+| where command_line CONTAINS "embed"
 | risk score=85 factor="Data embedding operation"
-| table timestamp, src_host, user, process_name, process, risk_score, risk_factors
+| table timestamp, src_host, user, process_name, command_line, risk_score, risk_factors

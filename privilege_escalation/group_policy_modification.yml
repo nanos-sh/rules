@@ -27,9 +27,9 @@ ai_triage_hints:
 ---
 source_type=windows_security OR source_type=auth_logs
 | where action="directory_modify"
-| where process CONTAINS "groupPolicyContainer" OR process CONTAINS "GPC" OR message CONTAINS "Group Policy"
+| where command_line CONTAINS "groupPolicyContainer" OR command_line CONTAINS "GPC" OR message CONTAINS "Group Policy"
 | risk score=60 entity=user factor="GPO modified"
 | eval hour = tonumber(strftime(timestamp, "%H"))
 | where hour < 7 OR hour > 19
 | risk score=80 factor="Off-hours GPO change"
-| table timestamp, user, src_host, dest_host, process, risk_score, risk_factors
+| table timestamp, user, src_host, dest_host, command_line, risk_score, risk_factors
