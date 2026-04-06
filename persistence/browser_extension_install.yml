@@ -26,7 +26,7 @@ ai_triage_hints:
 ---
 source_type=endpoint_edr OR source_type=windows_sysmon
 | where file_action="create"
-| where file_path CONTAINS "\Extensions\" AND file_path CONTAINS "manifest.json"
+| where file_path CONTAINS "\\Extensions\\" AND file_path CONTAINS "manifest.json"
 | where process_name NOT IN ("chrome.exe", "msedge.exe", "firefox.exe")
 | risk score=65 entity=src_host factor="Extension installed outside browser"
 | where process_name IN ("powershell.exe", "cmd.exe", "wscript.exe")

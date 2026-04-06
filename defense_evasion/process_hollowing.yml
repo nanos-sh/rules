@@ -26,6 +26,6 @@ ai_triage_hints:
 source_type=windows_sysmon OR source_type=endpoint_edr
 | where action="process_create"
 | where process_name IN ("svchost.exe", "explorer.exe", "RuntimeBroker.exe", "dllhost.exe")
-| where process_path NOT CONTAINS "\Windows\"
+| where process_path NOT CONTAINS "\\Windows\\"
 | risk score=90 entity=src_host factor="Process hollowing indicator"
 | table timestamp, src_host, process_name, process_path, parent_process_name, command_line, risk_score, risk_factors

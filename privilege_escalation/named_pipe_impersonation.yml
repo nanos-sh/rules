@@ -26,7 +26,7 @@ ai_triage_hints:
 ---
 source_type=windows_sysmon
 | where action="pipe_create"
-| where command_line CONTAINS "\pipe\" AND (command_line CONTAINS "spoolss" OR command_line CONTAINS "efsrpc" OR command_line CONTAINS "lsarpc" OR command_line CONTAINS "samr")
+| where command_line CONTAINS "\\pipe\\" AND (command_line CONTAINS "spoolss" OR command_line CONTAINS "efsrpc" OR command_line CONTAINS "lsarpc" OR command_line CONTAINS "samr")
 | risk score=70 entity=src_host factor="Suspicious named pipe"
 | prevalence enrich=true window=30d
 | where host_count < 10
