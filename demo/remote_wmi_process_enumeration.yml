@@ -5,8 +5,8 @@ author: nanos.sh
 severity: medium
 mode: staging
 detection_mode: scheduled
-schedule: "* * * * *"
-lookback: 2m
+schedule: "*/5 * * * *"
+lookback: 6m
 folder: endpoint
 mitre_tactics:
   - TA0007

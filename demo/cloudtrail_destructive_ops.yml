@@ -5,8 +5,8 @@ author: nanos.sh
 severity: high
 mode: staging
 detection_mode: scheduled
-schedule: "* * * * *"
-lookback: 2m
+schedule: "*/5 * * * *"
+lookback: 6m
 folder: cloud
 mitre_tactics:
   - TA0040
